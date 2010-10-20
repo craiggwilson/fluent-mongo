@@ -294,7 +294,12 @@ namespace FluentMongo.Linq.Translators
         private void PushConditionScope(string name)
         {
             if (_scopes.Count == 0)
-                _scopes.Push(new Scope(name, _query[name]));
+            {
+                object value = null;
+                if (_query.Contains(name))
+                    value = _query[name];
+                _scopes.Push(new Scope(name, value));
+            }
             else
                 _scopes.Push(_scopes.Peek().CreateChildScope(name));
         }

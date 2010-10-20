@@ -214,28 +214,57 @@ namespace FluentMongo.Linq
 
         private object ExecuteFind(MongoQueryObject queryObject)
         {
-            throw new NotImplementedException();
-            //var cursor = queryObject.Collection.FindAll();
-            //BsonDocument spec;
-            //if (queryObject.Sort != null)
-            //{
-            //    spec = new BsonDocument
-            //    {
-            //        {"query", queryObject.Query}, 
-            //        {"orderby", queryObject.Sort}
-            //    };
-            //}
-            //else
-            //    spec = queryObject.Query;
+            var findAsMethod = typeof(MongoCollection).GetGenericMethod(
+                "FindAs",
+                BindingFlags.Public | BindingFlags.Instance,
+                new [] { typeof(BsonDocument), queryObject.DocumentType },
+                new [] { typeof(BsonDocument) });
 
-            //cursor.Spec(spec);
-            //if (queryObject.Fields.Count > 0)
-            //    cursor.Fields(queryObject.Fields);
-            //cursor.Limit(queryObject.NumberToLimit);
-            //cursor.Skip(queryObject.NumberToSkip);
+            BsonDocument queryDocument;
+            if (queryObject.Sort != null)
+            {
+                queryDocument = new BsonDocument
+                {
+                    {"query", queryObject.Query}, 
+                    {"orderby", queryObject.Sort}
+                };
+            }
+            else
+                queryDocument = queryObject.Query;
 
-            //var executor = GetExecutor(queryObject.DocumentType, queryObject.Projector, queryObject.Aggregator, true);
-            //return executor.Compile().DynamicInvoke(cursor.Documents);
+            var cursor = findAsMethod.Invoke(_collection, new [] { queryDocument });
+            var cursorType = cursor.GetType();
+            if (queryObject.Fields.Count > 0)
+            {
+                var setFieldsMethod = cursorType.GetGenericMethod(
+                    "SetFields",
+                   BindingFlags.Public | BindingFlags.Instance,
+                    new[] { typeof(BsonDocument) },
+                    new[] { typeof(BsonDocument) });
+
+                setFieldsMethod.Invoke(cursor, new [] { queryObject.Fields });
+            }
+
+            var setLimitMethod = cursorType.GetMethod(
+                "SetLimit",
+                 BindingFlags.Public | BindingFlags.Instance,
+                 null,
+                 new [] { typeof(int) },
+                 null);
+            
+            setLimitMethod.Invoke(cursor, new object[] { queryObject.NumberToLimit });
+
+            var setSkipMethod = cursorType.GetMethod(
+                "SetSkip",
+                 BindingFlags.Public | BindingFlags.Instance,
+                 null,
+                 new [] { typeof(int) },
+                 null);
+            
+            setSkipMethod.Invoke(cursor, new object[] { queryObject.NumberToSkip });
+
+            var executor = GetExecutor(queryObject.DocumentType, queryObject.Projector, queryObject.Aggregator, true);
+            return executor.Compile().DynamicInvoke(cursor);
         }
 
         private object ExecuteMapReduce(MongoQueryObject queryObject)

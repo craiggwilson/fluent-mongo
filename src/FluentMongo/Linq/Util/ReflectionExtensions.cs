@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Linq;
 
 namespace FluentMongo.Linq
 {
@@ -73,6 +74,27 @@ namespace FluentMongo.Linq
                 //we don't really care here, it just means the answer is false.
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Gets the generic method.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="methodName">Name of the method.</param>
+        /// <param name="bindingFlags">The binding flags.</param>
+        /// <param name="genericArguments">The generic arguments.</param>
+        /// <param name="parameterTypes">The parameter types.</param>
+        /// <returns></returns>
+        public static MethodInfo GetGenericMethod(this Type type, string methodName, BindingFlags bindingFlags, Type[] genericArguments, Type[] parameterTypes)
+        {
+            var methods = from genericMethod in type.GetMethods(bindingFlags)
+                          where genericMethod.Name == methodName && genericMethod.IsGenericMethodDefinition 
+                            && genericMethod.GetGenericArguments().Count() == genericArguments.Count()
+                          let method = genericMethod.MakeGenericMethod(genericArguments)
+                          where method.GetParameters().Select(x => x.ParameterType).SequenceEqual(parameterTypes)
+                          select method;
+
+            return methods.SingleOrDefault();
         }
     }
 }

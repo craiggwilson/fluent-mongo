@@ -32,7 +32,7 @@ namespace FluentMongo.Linq.Translators
                     //try this first, and if it fails, resort to javascript generation, which is slower on the server side.
                     _queryObject.SetQueryDocument(new BsonDocumentFormatter().FormatDocument(select.Where));
                 }
-                catch
+                catch(Exception ex)
                 {
                     _queryObject.SetWhereClause(new JavascriptFormatter().FormatJavascript(select.Where));
                 }

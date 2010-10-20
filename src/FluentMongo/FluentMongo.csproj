@@ -67,6 +67,7 @@
     <Compile Include="Linq\Grouping.cs" />
     <Compile Include="Linq\IMongoQueryable.cs" />
     <Compile Include="Linq\InvalidQueryException.cs" />
+    <Compile Include="Linq\MongoCollectionExtensions.cs" />
     <Compile Include="Linq\MongoQuery.cs" />
     <Compile Include="Linq\MongoQueryable.cs" />
     <Compile Include="Linq\MongoQueryObject.cs" />
@@ -100,11 +101,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\packages\mongo-csharp-driver\BsonLibrary\BsonLibrary.csproj">
+    <ProjectReference Include="..\..\packages\mongo-csharp-driver\BsonLibrary\BsonLibrary.csproj">
       <Project>{0E9A3A2A-49CD-4F6C-847C-DC79B4B65CE6}</Project>
       <Name>BsonLibrary</Name>
     </ProjectReference>
-    <ProjectReference Include="..\packages\mongo-csharp-driver\CSharpDriver\CSharpDriver.csproj">
+    <ProjectReference Include="..\..\packages\mongo-csharp-driver\CSharpDriver\CSharpDriver.csproj">
       <Project>{AE5166CD-76B0-4911-BD80-CED9521F37A1}</Project>
       <Name>CSharpDriver</Name>
     </ProjectReference>
