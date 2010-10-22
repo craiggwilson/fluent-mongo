@@ -17,23 +17,22 @@ namespace FluentMongo
         public virtual void SetupFixture()
         {
             _server = MongoServer.Create("mongodb://localhost");
+            _database = _server.GetDatabase("test");
         }
 
         [SetUp]
         public virtual void SetupTest()
-        {
-            _database = _server.GetDatabase("test");
-        }
+        { }
 
         [TearDown]
         public virtual void TearDownTest()
-        {
-            _server.DropDatabase("test");
-        }
+        { }
 
         [TestFixtureTearDown]
         public virtual void TearDownFixture()
-        { }
+        {
+            _server.DropDatabase("test");
+        }
 
         protected MongoCollection<T> GetCollection<T>(string name)
         {

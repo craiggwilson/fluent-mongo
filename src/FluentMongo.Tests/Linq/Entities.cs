@@ -21,7 +21,7 @@ namespace FluentMongo.Linq
         public Address PrimaryAddress { get; set; }
 
         [BsonElement("otherAdds")]
-        public List<Address> Addresses { get; set; }
+        public Address[] Addresses { get; set; }
 
         [BsonElement("emps")]
         public int[] EmployerIds { get; set; }

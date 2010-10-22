@@ -9,9 +9,10 @@ namespace FluentMongo.Linq
         protected MongoCollection<Person> Collection;
         protected MongoCollection<BsonDocument> BsonDocumentCollection;
 
-        [SetUp]
-        public virtual void TestSetup()
+        public override void SetupFixture()
         {
+            base.SetupFixture();
+
             Collection = GetCollection<Person>("people");
             BsonDocumentCollection = GetCollection<BsonDocument>("people");
         }

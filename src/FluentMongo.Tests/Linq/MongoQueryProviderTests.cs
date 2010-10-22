@@ -191,19 +191,19 @@ namespace FluentMongo.Linq
             Assert.AreEqual(@"{ ""add.city"" : ""my city"" }", queryObject.Query.ToJson());
         }
 
-        [Test]
-        public void NestedCollection_Count()
-        {
-            var people = from p in Collection.AsQueryable()
-                         where p.Addresses.Count == 1
-                         select p;
+        //[Test]
+        //public void NestedCollection_Count()
+        //{
+        //    var people = from p in Collection.AsQueryable()
+        //                 where p.Addresses.Length == 1
+        //                 select p;
 
-            var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(0, queryObject.Fields.Count);
-            Assert.AreEqual(0, queryObject.NumberToLimit);
-            Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""otherAdds"" : { ""$size"" : 1 } }", queryObject.Query.ToJson());
-        }
+        //    var queryObject = ((IMongoQueryable)people).GetQueryObject();
+        //    Assert.AreEqual(0, queryObject.Fields.Count);
+        //    Assert.AreEqual(0, queryObject.NumberToLimit);
+        //    Assert.AreEqual(0, queryObject.NumberToSkip);
+        //    Assert.AreEqual(@"{ ""otherAdds"" : { ""$size"" : 1 } }", queryObject.Query.ToJson());
+        //}
 
         [Test]
         public void NestedList_indexer()
@@ -227,18 +227,6 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(@"{ ""otherAdds"" : { ""$elemMatch"" : { ""city"" : ""London"" } } }", queryObject.Query.ToJson());
-        }
-
-        [Test]
-        public void NestedQueryable_All()
-        {
-            var people = Collection.AsQueryable().Where(x => x.Addresses.All(a => a.City == "London"));
-
-            var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(0, queryObject.Fields.Count);
-            Assert.AreEqual(0, queryObject.NumberToLimit);
-            Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""otherAdds"" : { ""$all"" : { ""city"" : ""London"" } } }", queryObject.Query.ToJson());
         }
 
         [Test]
