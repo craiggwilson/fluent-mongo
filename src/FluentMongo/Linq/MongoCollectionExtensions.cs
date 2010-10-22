@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using MongoDB.CSharpDriver;
+using MongoDB.Driver;
 
 namespace FluentMongo.Linq
 {

@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using MongoDB.CSharpDriver;
+using MongoDB.Driver;
 
 namespace FluentMongo.Linq
 {

@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using FluentMongo.Linq.Expressions;
-using MongoDB.BsonLibrary;
-using MongoDB.BsonLibrary.Serialization;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using FluentMongo.Linq.Util;
-using MongoDB.BsonLibrary.DefaultSerializer;
+using MongoDB.Bson.DefaultSerializer;
 
 namespace FluentMongo.Linq.Translators
 {

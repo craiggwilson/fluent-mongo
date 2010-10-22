@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using FluentMongo.Linq.Expressions;
-using MongoDB.BsonLibrary;
+using MongoDB.Bson;
 
 namespace FluentMongo.Linq.Translators
 {

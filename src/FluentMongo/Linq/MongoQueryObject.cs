@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-using MongoDB.CSharpDriver;
-using MongoDB.BsonLibrary;
+using MongoDB.Driver;
+using MongoDB.Bson;
 namespace FluentMongo.Linq
 {
     internal class MongoQueryObject

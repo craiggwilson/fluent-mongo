@@ -7,8 +7,8 @@ using FluentMongo.Linq.Expressions;
 using FluentMongo.Linq.Translators;
 using System.Collections;
 
-using MongoDB.CSharpDriver;
-using MongoDB.BsonLibrary;
+using MongoDB.Driver;
+using MongoDB.Bson;
 using FluentMongo.Linq.Util;
 
 namespace FluentMongo.Linq

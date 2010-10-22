@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 
 using FluentMongo.Linq.Expressions;
-using MongoDB.BsonLibrary;
+using MongoDB.Bson;
 
 namespace FluentMongo.Linq.Translators
 {

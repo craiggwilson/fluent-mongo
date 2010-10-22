@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 
 using NUnit.Framework;
-using MongoDB.CSharpDriver;
-using MongoDB.BsonLibrary;
-using MongoDB.BsonLibrary.DefaultSerializer;
+using MongoDB.Driver;
+using MongoDB.Bson;
+using MongoDB.Bson.DefaultSerializer;
 
 namespace FluentMongo.Linq
 {

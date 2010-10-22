@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using MongoDB.BsonLibrary;
+using MongoDB.Bson;
 
 namespace FluentMongo.Linq.Util
 {
