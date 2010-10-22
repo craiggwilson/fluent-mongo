@@ -49,9 +49,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Linq\SimpleTest.cs" />
-    <Compile Include="NUnitSampleTests.cs" />
+    <Compile Include="Linq\Entities.cs" />
+    <Compile Include="Linq\LinqTestBase.cs" />
+    <Compile Include="Linq\MongoQueryProviderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\packages\mongo-csharp-driver\Bson\Bson.csproj">

@@ -313,8 +313,8 @@ namespace FluentMongo.Linq.Translators
             var doc = _query;
             foreach (var s in _scopes.Reverse()) //as if it were a queue
             {
-                var sub = doc[s.Key];
-                if (sub == null)
+                BsonValue sub;
+                if (!doc.TryGetValue(s.Key, out sub))
                     doc[s.Key] = sub = new BsonDocument();
                 else if (!(sub is BsonDocument))
                     throw new InvalidQueryException();
@@ -323,12 +323,12 @@ namespace FluentMongo.Linq.Translators
             }
 
             if (scope.Value is NullPlaceHolder)
-                doc[scope.Key] = null;
+                doc[scope.Key] = BsonConstants.Null;
             else if (_scopes.Count > 0 && _scopes.Peek().Key == "$or")
             {
-                ArrayList arr = _scopes.Peek().Value as ArrayList;
+                BsonArray arr = _scopes.Peek().Value as BsonArray;
                 if (arr == null)
-                    arr = new ArrayList();
+                    arr = new BsonArray();
 
                 arr.Add(new BsonDocument(scope.Key, BsonValue.Create(scope.Value)));
                 _scopes.Peek().AddCondition(arr);
@@ -394,7 +394,12 @@ namespace FluentMongo.Linq.Translators
             public Scope CreateChildScope(string name)
             {
                 if (Value is BsonDocument)
-                    return new Scope(name, ((BsonDocument)Value)[name]);
+                {
+                    BsonValue currentValue;
+                    if(!((BsonDocument)Value).TryGetValue(name, out currentValue))
+                        currentValue = null;
+                    return new Scope(name, currentValue);
+                }
 
                 return new Scope(name, null);
             }
