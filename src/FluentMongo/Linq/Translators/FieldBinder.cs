@@ -104,11 +104,11 @@ namespace FluentMongo.Linq.Translators
                     var classMap = BsonClassMap.LookupClassMap(declaringType);
                     var propMap = classMap.GetPropertyMap(m.Member.Name);
                     if (propMap != null)
-                    {
                         _fieldParts.Push(propMap.ElementName);
-                        Visit(m.Expression);
-                        return m;
-                    }
+                    else
+                        _fieldParts.Push(m.Member.Name);
+                    Visit(m.Expression);
+                    return m;
                 }
 
                 _isBlocked = true;

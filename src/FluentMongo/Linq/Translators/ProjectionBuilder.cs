@@ -37,14 +37,16 @@ namespace FluentMongo.Linq.Translators
 
             bool isGroupingField = _determiner.IsGroupingKey(field);
             Expression current;
-            if(parts.Contains("Key") && isGroupingField)
+            if (parts.Contains("Key") && isGroupingField)
                 current = _document;
             else
-                current = Expression.Call(
-                    _document,
-                    "Get",
-                    new[] { typeof(BsonDocument) },
-                    Expression.Constant("value"));
+                current = Expression.Convert(
+                    Expression.Call(
+                        _document,
+                        "GetValue",
+                        Type.EmptyTypes,
+                        Expression.Constant("value")),
+                    typeof(BsonDocument));
 
             for(int i = 0, n = parts.Length; i < n; i++)
             {
@@ -53,11 +55,13 @@ namespace FluentMongo.Linq.Translators
                 if(parts[i] == "Key" && isGroupingField)
                     parts[i] = "_id";
 
-                current = Expression.Call(
-                    current,
-                    "Get",
-                    new[] {type},
-                    Expression.Constant(parts[i]));
+                current = Expression.Convert(
+                    Expression.Call(
+                        current,
+                        "GetValue",
+                        Type.EmptyTypes,
+                        Expression.Constant(parts[i])),
+                    type);
             }
 
             return current;

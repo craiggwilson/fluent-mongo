@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Linq\Entities.cs" />
     <Compile Include="Linq\LinqTestBase.cs" />
+    <Compile Include="Linq\MapReduceTests.cs" />
     <Compile Include="Linq\MongoQueryProviderTests.cs" />
     <Compile Include="Linq\MongoQueryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

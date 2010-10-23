@@ -10,6 +10,7 @@ using System.Collections;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using FluentMongo.Linq.Util;
+using MongoDB.Driver.Builders;
 
 namespace FluentMongo.Linq
 {
@@ -126,7 +127,8 @@ namespace FluentMongo.Linq
         /// </summary>
         /// <param name="queryObject">The query object.</param>
         /// <returns></returns>
-        internal object ExecuteQueryObject(MongoQueryObject queryObject){
+        internal object ExecuteQueryObject(MongoQueryObject queryObject)
+        {
             if (queryObject.IsCount)
                 return ExecuteCount(queryObject);
             if (queryObject.IsMapReduce)
@@ -217,8 +219,8 @@ namespace FluentMongo.Linq
             var findAsMethod = typeof(MongoCollection).GetGenericMethod(
                 "FindAs",
                 BindingFlags.Public | BindingFlags.Instance,
-                new [] { typeof(BsonDocument), queryObject.DocumentType },
-                new [] { typeof(BsonDocument) });
+                new[] { typeof(BsonDocument), queryObject.DocumentType },
+                new[] { typeof(BsonDocument) });
 
             BsonDocument queryDocument;
             if (queryObject.Sort != null)
@@ -232,7 +234,7 @@ namespace FluentMongo.Linq
             else
                 queryDocument = queryObject.Query;
 
-            var cursor = findAsMethod.Invoke(_collection, new [] { queryDocument });
+            var cursor = findAsMethod.Invoke(_collection, new[] { queryDocument });
             var cursorType = cursor.GetType();
             if (queryObject.Fields.Count > 0)
             {
@@ -242,25 +244,25 @@ namespace FluentMongo.Linq
                     new[] { typeof(BsonDocument) },
                     new[] { typeof(BsonDocument) });
 
-                setFieldsMethod.Invoke(cursor, new [] { queryObject.Fields });
+                setFieldsMethod.Invoke(cursor, new[] { queryObject.Fields });
             }
 
             var setLimitMethod = cursorType.GetMethod(
                 "SetLimit",
                  BindingFlags.Public | BindingFlags.Instance,
                  null,
-                 new [] { typeof(int) },
+                 new[] { typeof(int) },
                  null);
-            
+
             setLimitMethod.Invoke(cursor, new object[] { queryObject.NumberToLimit });
 
             var setSkipMethod = cursorType.GetMethod(
                 "SetSkip",
                  BindingFlags.Public | BindingFlags.Instance,
                  null,
-                 new [] { typeof(int) },
+                 new[] { typeof(int) },
                  null);
-            
+
             setSkipMethod.Invoke(cursor, new object[] { queryObject.NumberToSkip });
 
             var executor = GetExecutor(queryObject.DocumentType, queryObject.Projector, queryObject.Aggregator, true);
@@ -269,28 +271,28 @@ namespace FluentMongo.Linq
 
         private object ExecuteMapReduce(MongoQueryObject queryObject)
         {
-            throw new NotImplementedException();
-            //var mapReduce = queryObject.Collection.MapReduce();
+            var options = new MapReduceOptionsBuilder();
 
-            //var mapReduceCommand = mapReduce.Command;
-            //mapReduceCommand.Map = new BsonJavaScript(queryObject.MapFunction);
-            //mapReduceCommand.Reduce = new BsonJavaScript(queryObject.ReduceFunction);
-            //mapReduceCommand.Finalize = new BsonJavaScript(queryObject.FinalizerFunction);
-            //mapReduceCommand.Query = queryObject.Query;
+            options.SetQuery<BsonDocument>(queryObject.Query);
+            options.SetFinalize(new BsonJavaScript(queryObject.FinalizerFunction));
+            options.SetLimit(queryObject.NumberToLimit);
 
-            //if(queryObject.Sort != null)
-            //    mapReduceCommand.Sort = queryObject.Sort;
+            if (queryObject.Sort != null)
+                options.SetSortOrder(queryObject.Sort);
 
-            //mapReduceCommand.Limit = queryObject.NumberToLimit;
+            if (queryObject.NumberToSkip != 0)
+                throw new InvalidQueryException("MapReduce queries do not support Skips.");
 
-            //if (queryObject.NumberToSkip != 0)
-            //    throw new InvalidQueryException("MapReduce queries do no support Skips.");
+            var mapReduce = _collection.MapReduce<BsonDocument>(
+                new BsonJavaScript(queryObject.MapFunction),
+                new BsonJavaScript(queryObject.ReduceFunction),
+                options.ToBsonDocument());
 
-            //var executor = GetExecutor(typeof(BsonDocument), queryObject.Projector, queryObject.Aggregator, true);
-            //return executor.Compile().DynamicInvoke(mapReduce.Documents);
+            var executor = GetExecutor(typeof(BsonDocument), queryObject.Projector, queryObject.Aggregator, true);
+            return executor.Compile().DynamicInvoke(mapReduce.GetResults<BsonDocument>());
         }
 
-        private static LambdaExpression GetExecutor(Type documentType, LambdaExpression projector,  
+        private static LambdaExpression GetExecutor(Type documentType, LambdaExpression projector,
             Expression aggregator, bool boxReturn)
         {
             var documents = Expression.Parameter(typeof(IEnumerable), "documents");
