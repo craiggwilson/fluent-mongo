@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 
 using MongoDB.Bson;
 using FluentMongo.Linq.Expressions;
+using FluentMongo.Linq.Util;
 
 namespace FluentMongo.Linq.Translators
 {
@@ -282,7 +283,7 @@ namespace FluentMongo.Linq.Translators
 
         private static string GetJavascriptValueForConstant(ConstantExpression c)
         {
-            return c.Value.ToJson();
+            return JavasriptHelper.SerializeForServerSide(c.Value);
         }
 
         private class JavascriptObjectFormatter : MongoExpressionVisitor
