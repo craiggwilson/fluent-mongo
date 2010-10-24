@@ -8,6 +8,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using FluentMongo.Linq.Util;
 using MongoDB.Bson.DefaultSerializer;
+using System.Reflection;
 
 namespace FluentMongo.Linq.Translators
 {
@@ -21,11 +22,13 @@ namespace FluentMongo.Linq.Translators
         private Alias _alias;
         private FieldFinder _finder;
         private Type _elementType;
+        private Dictionary<MemberInfo, Expression> _memberMap;
 
         public Expression Bind(Expression expression, Type elementType)
         {
             _alias = new Alias();
-            _finder = new FieldFinder();
+            _memberMap = new Dictionary<MemberInfo, Expression>();
+            _finder = new FieldFinder(_memberMap);
             _elementType = elementType;
             return Visit(expression);
         }
@@ -42,6 +45,24 @@ namespace FluentMongo.Linq.Translators
             return base.Visit(exp);
         }
 
+        protected override NewExpression VisitNew(NewExpression nex)
+        {
+            var newNex = base.VisitNew(nex);
+            if (newNex != nex && newNex.Members != null && newNex.Members.Count == newNex.Arguments.Count)
+            {
+                var joined = newNex.Constructor.GetParameters()
+                    .Zip(newNex.Members, (p, m) => new { Parameter = p, Member = m })
+                    .Zip(newNex.Arguments, (j, a) => new { Parameter = j.Parameter, Member = j.Member, Argument = a });
+                
+                if(!joined.All(x => x.Parameter.Name == x.Member.Name))
+                    return newNex;
+
+                foreach(var j in joined)
+                    _memberMap[j.Member] = j.Argument;
+            }
+            return newNex;
+        }
+
         protected override Expression VisitParameter(ParameterExpression p)
         {
             if(p.Type == _elementType)
@@ -54,6 +75,12 @@ namespace FluentMongo.Linq.Translators
         {
             private Stack<string> _fieldParts;
             private bool _isBlocked;
+            private readonly Dictionary<MemberInfo, Expression> _memberMap;
+
+            public FieldFinder(Dictionary<MemberInfo, Expression> memberMap)
+            {
+                _memberMap = memberMap;
+            }
 
             public string Find(Expression expression)
             {
@@ -101,14 +128,25 @@ namespace FluentMongo.Linq.Translators
                 var declaringType = m.Member.DeclaringType;
                 if (!TypeHelper.IsNativeToMongo(declaringType) && !IsCollection(declaringType))
                 {
-                    var classMap = BsonClassMap.LookupClassMap(declaringType);
-                    var propMap = classMap.GetPropertyMap(m.Member.Name);
-                    if (propMap != null)
-                        _fieldParts.Push(propMap.ElementName);
-                    else
-                        _fieldParts.Push(m.Member.Name);
-                    Visit(m.Expression);
-                    return m;
+                    Expression e;
+                    if (_memberMap.TryGetValue(m.Member, out e) && e is FieldExpression)
+                    {
+                        _fieldParts.Push(((FieldExpression)e).Name);
+                        Visit(m.Expression);
+                        return m;
+                    }
+                    else if(e == null)
+                    {
+                        var classMap = BsonClassMap.LookupClassMap(declaringType);
+                        var propMap = classMap.GetPropertyMap(m.Member.Name);
+                        if (propMap != null)
+                            _fieldParts.Push(propMap.ElementName);
+                        else
+                            _fieldParts.Push(m.Member.Name);
+
+                        Visit(m.Expression);
+                        return m;
+                    }
                 }
 
                 _isBlocked = true;

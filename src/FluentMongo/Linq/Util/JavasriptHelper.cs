@@ -74,6 +74,10 @@ namespace FluentMongo.Linq.Util
             {
                 json.Append(String.Format(@"{{ ""$uid"": ""{0}"" }}", value));
             }
+            else if (value is string)
+            {
+                json.AppendFormat(@"""{0}""", Escape((string)value));
+            }
             else if (value is IEnumerable)
             {
                 json.Append("[ ");

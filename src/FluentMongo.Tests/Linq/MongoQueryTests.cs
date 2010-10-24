@@ -109,6 +109,17 @@ namespace FluentMongo.Linq
         }
 
         [Test]
+        public void Chained2()
+        {
+            var people = Collection.AsQueryable()
+                .Select(x => new { Name = x.FirstName + x.LastName, x.Age })
+                .Where(x => x.Name == "BobMcBob")
+                .Select(x => x.Name).ToList();
+
+            Assert.AreEqual(1, people.Count);
+        }
+
+        [Test]
         public void Complex_Addition()
         {
             var people = Collection.AsQueryable().Where(x => x.Age + 23 < 50).ToList();

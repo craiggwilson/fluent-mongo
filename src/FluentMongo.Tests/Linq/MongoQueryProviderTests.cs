@@ -41,7 +41,7 @@ namespace FluentMongo.Linq
         public void Chained()
         {
             var people = Collection.AsQueryable()
-                .Select(x => new {Name = x.FirstName + x.LastName, x.Age})
+                .Select(x => new {Name = x.FirstName + x.LastName, x.Age })
                 .Where(x => x.Age > 21)
                 .Select(x => x.Name);
 
@@ -50,6 +50,21 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(@"{ ""age"" : { ""$gt"" : 21 } }", queryObject.Query.ToJson());
+        }
+
+        [Test]
+        public void Chained2()
+        {
+            var people = Collection.AsQueryable()
+                .Select(x => new { Name = x.FirstName + x.LastName, x.Age })
+                .Where(x => x.Name == "BobMcBob")
+                .Select(x => x.Name);
+
+            var queryObject = ((IMongoQueryable)people).GetQueryObject();
+            Assert.AreEqual(2, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.NumberToLimit);
+            Assert.AreEqual(0, queryObject.NumberToSkip);
+            Assert.AreEqual(@"{ ""$where"" : ""((this.fn + this.ln) === \""BobMcBob\"")"" }", queryObject.Query.ToJson());
         }
 
         [Test]

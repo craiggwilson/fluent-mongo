@@ -45,6 +45,11 @@ namespace FluentMongo.Linq
             throw new NotSupportedException("Only fields, properties, and methods are supported.");
         }
 
+        public static bool IsAnonymous(this Type type)
+        {
+            return type.Namespace == null && type.IsSealed;
+        }
+
         /// <summary>
         /// Determines whether [is open type assignable from] [the specified open type].
         /// </summary>

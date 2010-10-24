@@ -94,6 +94,7 @@
     <Compile Include="Linq\Translators\RedundantFieldRemover.cs" />
     <Compile Include="Linq\Translators\RedundantSubqueryRemover.cs" />
     <Compile Include="Linq\Translators\SubqueryRemover.cs" />
+    <Compile Include="Linq\Util\EnumerableExtensions.cs" />
     <Compile Include="Linq\Util\JavasriptHelper.cs" />
     <Compile Include="Linq\Util\ReflectionExtensions.cs" />
     <Compile Include="Linq\Util\ScopedDictionary.cs" />
