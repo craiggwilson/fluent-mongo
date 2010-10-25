@@ -48,17 +48,15 @@ namespace FluentMongo.Linq.Translators
         protected override NewExpression VisitNew(NewExpression nex)
         {
             var newNex = base.VisitNew(nex);
-            if (newNex != nex && newNex.Members != null && newNex.Members.Count == newNex.Arguments.Count)
+            if (newNex != nex && newNex.Members != null) //we only get Members when it is an anonymous type
             {
-                var joined = newNex.Constructor.GetParameters()
-                    .Zip(newNex.Members, (p, m) => new { Parameter = p, Member = m })
-                    .Zip(newNex.Arguments, (j, a) => new { Parameter = j.Parameter, Member = j.Member, Argument = a });
-                
-                if(!joined.All(x => x.Parameter.Name == x.Member.Name))
-                    return newNex;
+                var properties = newNex.Type.GetProperties();
+                var joined = from param in newNex.Constructor.GetParameters()
+                             join prop in properties on param.Name equals prop.Name
+                             select new { Parameter = param, Property = prop };
 
-                foreach(var j in joined)
-                    _memberMap[j.Member] = j.Argument;
+                foreach (var j in joined)
+                    _memberMap[j.Property] = newNex.Arguments[j.Parameter.Position];
             }
             return newNex;
         }
@@ -76,9 +74,11 @@ namespace FluentMongo.Linq.Translators
             private Stack<string> _fieldParts;
             private bool _isBlocked;
             private readonly Dictionary<MemberInfo, Expression> _memberMap;
+            private readonly GroupingKeyDeterminer _determiner;
 
             public FieldFinder(Dictionary<MemberInfo, Expression> memberMap)
             {
+                _determiner = new GroupingKeyDeterminer();
                 _memberMap = memberMap;
             }
 
@@ -129,9 +129,16 @@ namespace FluentMongo.Linq.Translators
                 if (!TypeHelper.IsNativeToMongo(declaringType) && !IsCollection(declaringType))
                 {
                     Expression e;
-                    if (_memberMap.TryGetValue(m.Member, out e) && e is FieldExpression)
+                    if (_determiner.IsGroupingKey(m))
+                    {
+                        _fieldParts.Push(m.Member.Name);
+                        Visit(m.Expression);
+                        return m;
+                    }
+                    else if (_memberMap.TryGetValue(m.Member, out e) && e is FieldExpression)
                     {
                         _fieldParts.Push(((FieldExpression)e).Name);
+                        _memberMap[m.Member] = e;
                         Visit(m.Expression);
                         return m;
                     }
@@ -211,6 +218,40 @@ namespace FluentMongo.Linq.Translators
                     type = type.GetGenericTypeDefinition();
 
                 return CollectionTypes.Any(x => x.IsAssignableFrom(type));
+            }
+        }
+
+        private class GroupingKeyDeterminer : MongoExpressionVisitor
+        {
+            private bool _isGroupingKey;
+
+            public bool IsGroupingKey(Expression exp)
+            {
+                _isGroupingKey = false;
+                Visit(exp);
+                return _isGroupingKey;
+            }
+
+            protected override Expression Visit(Expression exp)
+            {
+                if (exp == null)
+                    return exp;
+
+                if (_isGroupingKey)
+                    return exp;
+
+                if (exp.Type.IsGenericType && exp.Type.GetGenericTypeDefinition() == typeof(IGrouping<,>))
+                {
+                    _isGroupingKey = true;
+                    return exp;
+                }
+                return base.Visit(exp);
+            }
+
+            protected override Expression VisitMemberAccess(MemberExpression m)
+            {
+                Visit(m.Expression);
+                return m;
             }
         }
     }

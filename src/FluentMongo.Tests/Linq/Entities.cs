@@ -8,6 +8,8 @@ namespace FluentMongo.Linq
 {
     public class Person
     {
+        public ObjectId Id { get; set; }
+
         [BsonElement("fn")]
         public string FirstName { get; set; }
 

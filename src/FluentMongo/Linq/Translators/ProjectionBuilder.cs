@@ -30,9 +30,9 @@ namespace FluentMongo.Linq.Translators
 
         protected override Expression VisitField(FieldExpression field)
         {
-            if(!_isMapReduce)
+            if (!_isMapReduce)
                 return Visit(field.Expression);
-            
+
             var parts = field.Name.Split('.');
 
             bool isGroupingField = _determiner.IsGroupingKey(field);
@@ -40,31 +40,34 @@ namespace FluentMongo.Linq.Translators
             if (parts.Contains("Key") && isGroupingField)
                 current = _document;
             else
-                current = Expression.Convert(
-                    Expression.Call(
-                        _document,
-                        "GetValue",
-                        Type.EmptyTypes,
-                        Expression.Constant("value")),
-                    typeof(BsonDocument));
+                current = Expression.Call(
+                            _document,
+                            "GetValue",
+                            Type.EmptyTypes,
+                            Expression.Constant("value"));
 
-            for(int i = 0, n = parts.Length; i < n; i++)
+            for (int i = 0; i < parts.Length; i++)
             {
-                var type = i == n - 1 ? field.Type : typeof(BsonDocument);
-
-                if(parts[i] == "Key" && isGroupingField)
+                if (parts[i] == "Key" && isGroupingField)
                     parts[i] = "_id";
 
-                current = Expression.Convert(
-                    Expression.Call(
-                        current,
+                current = Expression.Call(
+                        Expression.Convert(
+                            current,
+                            typeof(BsonDocument)),
                         "GetValue",
                         Type.EmptyTypes,
-                        Expression.Constant(parts[i])),
-                    type);
+                        Expression.Constant(parts[i]));
             }
 
-            return current;
+            return Expression.Convert(
+                current = Expression.Call(
+                    typeof(Convert),
+                    "ChangeType",
+                    Type.EmptyTypes,
+                    Expression.MakeMemberAccess(current, typeof(BsonValue).GetProperty("RawValue")),
+                    Expression.Constant(field.Type)),
+                field.Type);
         }
 
         protected override Expression VisitParameter(ParameterExpression p)
