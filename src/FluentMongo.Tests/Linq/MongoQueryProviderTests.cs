@@ -46,7 +46,7 @@ namespace FluentMongo.Linq
                 .Select(x => x.Name);
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(2, queryObject.Fields.Count);
+            Assert.AreEqual(2, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(@"{ ""age"" : { ""$gt"" : 21 } }", queryObject.Query.ToJson());
@@ -61,7 +61,7 @@ namespace FluentMongo.Linq
                 .Select(x => x.Name);
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(2, queryObject.Fields.Count);
+            Assert.AreEqual(2, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(@"{ ""$where"" : ""((this.fn + this.ln) === \""BobMcBob\"")"" }", queryObject.Query.ToJson());
@@ -109,7 +109,7 @@ namespace FluentMongo.Linq
             var people = Collection.AsQueryable().Where(x => x.Age == 21 || x.Age == 35);
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
 
@@ -136,7 +136,7 @@ namespace FluentMongo.Linq
             var people = Collection.AsQueryable().Where(x => x.PrimaryAddress.AddressType == AddressType.Company);
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(@"{ ""add.AddressType"" : " + ((int)AddressType.Company).ToString() + " }", queryObject.Query.ToJson());
@@ -149,7 +149,7 @@ namespace FluentMongo.Linq
             var people = Collection.AsQueryable().Where(x => names.Contains(x.FirstName));
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(@"{ ""fn"" : { ""$in"" : [""Jack"", ""Bob""] } }", queryObject.Query.ToJson());
@@ -162,7 +162,7 @@ namespace FluentMongo.Linq
             var people = Collection.AsQueryable().Where(x => names.Contains(x.FirstName));
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(@"{ ""fn"" : { ""$in"" : [""Jack"", ""Bob""] } }", queryObject.Query.ToJson());
@@ -176,7 +176,7 @@ namespace FluentMongo.Linq
                          select p;
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(@"{ ""emps"" : { ""$size"" : 1 } }", queryObject.Query.ToJson());
@@ -188,7 +188,7 @@ namespace FluentMongo.Linq
             var people = Collection.AsQueryable().Where(x => x.EmployerIds[0] == 1);
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(@"{ ""emps.0"" : 1 }", queryObject.Query.ToJson());
@@ -214,7 +214,7 @@ namespace FluentMongo.Linq
         //                 select p;
 
         //    var queryObject = ((IMongoQueryable)people).GetQueryObject();
-        //    Assert.AreEqual(0, queryObject.Fields.Count);
+        //    Assert.AreEqual(0, queryObject.Fields.ElementCount);
         //    Assert.AreEqual(0, queryObject.NumberToLimit);
         //    Assert.AreEqual(0, queryObject.NumberToSkip);
         //    Assert.AreEqual(@"{ ""otherAdds"" : { ""$size"" : 1 } }", queryObject.Query.ToJson());
@@ -226,7 +226,7 @@ namespace FluentMongo.Linq
             var people = Collection.AsQueryable().Where(x => x.Addresses[1].City == "Tokyo");
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(@"{ ""otherAdds.1.city"" : ""Tokyo"" }", queryObject.Query.ToJson());
@@ -238,7 +238,7 @@ namespace FluentMongo.Linq
             var people = Collection.AsQueryable().Where(x => x.Addresses.Any(a => a.City == "London"));
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(@"{ ""otherAdds"" : { ""$elemMatch"" : { ""city"" : ""London"" } } }", queryObject.Query.ToJson());
@@ -250,7 +250,7 @@ namespace FluentMongo.Linq
             var people = Collection.AsQueryable().Where(x => x.EmployerIds.Contains(1));
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(@"{ ""emps"" : 1 }" , queryObject.Query.ToJson());
@@ -262,7 +262,7 @@ namespace FluentMongo.Linq
             var people = Collection.AsQueryable().Where(x => x.Addresses.Count() == 1);
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(@"{ ""otherAdds"" : { ""$size"" : 1 } }", queryObject.Query.ToJson());
@@ -274,7 +274,7 @@ namespace FluentMongo.Linq
             var people = Collection.AsQueryable().Where(x => x.Addresses.ElementAt(1).City == "Tokyo");
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(@"{ ""otherAdds.1.city"" : ""Tokyo"" }", queryObject.Query.ToJson());
@@ -286,7 +286,7 @@ namespace FluentMongo.Linq
             var people = Collection.AsQueryable().Where(x => x.MidName != null);
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(@"{ ""MidName"" : { ""$ne"" : null } }", queryObject.Query.ToJson());
@@ -298,10 +298,23 @@ namespace FluentMongo.Linq
             var people = Collection.AsQueryable().Where(x => x.MidName == null);
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(@"{ ""MidName"" : null }", queryObject.Query.ToJson());
+        }
+
+        [Test]
+        public void NullCheckOnClassTypes()
+        {
+            //BUG: this a bug related to id generation...
+            var people = Collection.AsQueryable().Where(x => x.LinkedId == null);
+
+            var queryObject = ((IMongoQueryable)people).GetQueryObject();
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
+            Assert.AreEqual(0, queryObject.NumberToLimit);
+            Assert.AreEqual(0, queryObject.NumberToSkip);
+            Assert.AreEqual(@"{ ""LinkedId"" : null }", queryObject.Query.ToJson());
         }
 
         [Test]
@@ -324,7 +337,7 @@ namespace FluentMongo.Linq
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(0, queryObject.Query.Count);
+            Assert.AreEqual(0, queryObject.Query.ElementCount);
             Assert.AreEqual(@"{ ""fn"" : 1, ""ln"" : 1 }", queryObject.Fields.ToJson());
         }
 
@@ -349,10 +362,10 @@ namespace FluentMongo.Linq
                 .Select(p => new PersonWrapper(p, p.FirstName));
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(0, queryObject.Fields.Count());
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(0, queryObject.Query.Count);
+            Assert.AreEqual(0, queryObject.Query.ElementCount);
         }
 
         [Test]
@@ -363,7 +376,7 @@ namespace FluentMongo.Linq
                          select p;
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(@"{ ""fn"" : { ""$regex"" : ""Joe"", ""$options"" : """" } }", queryObject.Query.ToJson());
@@ -377,7 +390,7 @@ namespace FluentMongo.Linq
                          select p;
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(@"{ ""fn"" : { ""$regex"" : ""Joe"", ""$options"" : ""i"" } }", queryObject.Query.ToJson());
@@ -413,7 +426,7 @@ namespace FluentMongo.Linq
                          select p;
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(@"{ ""fn"" : { ""$regex"" : ""o"", ""$options"" : """" } }", queryObject.Query.ToJson());
@@ -427,7 +440,7 @@ namespace FluentMongo.Linq
                          select p;
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(@"{ ""fn"" : { ""$regex"" : ""e$"", ""$options"" : """" } }", queryObject.Query.ToJson());
@@ -441,7 +454,7 @@ namespace FluentMongo.Linq
                          select p;
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(@"{ ""fn"" : { ""$regex"" : ""^J"", ""$options"" : """" } }", queryObject.Query.ToJson());
@@ -456,7 +469,7 @@ namespace FluentMongo.Linq
 
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(0, queryObject.Query.Count);
+            Assert.AreEqual(0, queryObject.Query.ElementCount);
         }
     }
 }

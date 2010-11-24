@@ -236,7 +236,7 @@ namespace FluentMongo.Linq
 
             var cursor = findAsMethod.Invoke(_collection, new[] { queryDocument });
             var cursorType = cursor.GetType();
-            if (queryObject.Fields.Count > 0)
+            if (queryObject.Fields.ElementCount > 0)
             {
                 var setFieldsMethod = cursorType.GetGenericMethod(
                     "SetFields",

@@ -335,7 +335,6 @@ namespace FluentMongo.Linq
         [Test]
         public void NullCheckOnClassTypes()
         {
-            //BUG: this a bug related to id generation...
             var people = Collection.AsQueryable().Where(x => x.LinkedId == null).ToArray();
 
             Assert.AreEqual(3, people.Length);

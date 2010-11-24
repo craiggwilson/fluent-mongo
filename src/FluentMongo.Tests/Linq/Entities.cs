@@ -30,7 +30,7 @@ namespace FluentMongo.Linq
 
         public string MidName { get; set; }
 
-        public ObjectId LinkedId { get; set; }
+        public ObjectId? LinkedId { get; set; }
     }
 
     public class Address

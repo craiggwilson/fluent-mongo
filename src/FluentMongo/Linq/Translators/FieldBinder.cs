@@ -145,7 +145,7 @@ namespace FluentMongo.Linq.Translators
                     else if(e == null)
                     {
                         var classMap = BsonClassMap.LookupClassMap(declaringType);
-                        var propMap = classMap.GetPropertyMap(m.Member.Name);
+                        var propMap = classMap.GetMemberMap(m.Member.Name);
                         if (propMap != null)
                             _fieldParts.Push(propMap.ElementName);
                         else
