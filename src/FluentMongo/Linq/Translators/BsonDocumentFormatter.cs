@@ -270,7 +270,7 @@ namespace FluentMongo.Linq.Translators
 
         private void AddCondition(object value)
         {
-            _scopes.Peek().AddCondition(value ?? NullPlaceHolder.Instance);
+            _scopes.Peek().AddCondition(value ?? BsonNull.Value);
         }
 
         private void AddCondition(string name, object value)
@@ -311,9 +311,7 @@ namespace FluentMongo.Linq.Translators
                 doc = (BsonDocument)sub;
             }
 
-            if (scope.Value is NullPlaceHolder)
-                doc[scope.Key] = BsonConstants.Null;
-            else if (_scopes.Count > 0 && _scopes.Peek().Key == "$or")
+            if (_scopes.Count > 0 && _scopes.Peek().Key == "$or")
             {
                 BsonArray arr = _scopes.Peek().Value as BsonArray;
                 if (arr == null)
@@ -345,14 +343,6 @@ namespace FluentMongo.Linq.Translators
         private static bool IsBoolean(Expression expression)
         {
             return expression.Type == typeof(bool) || expression.Type == typeof(bool?);
-        }
-
-        private class NullPlaceHolder
-        {
-            public static readonly NullPlaceHolder Instance = new NullPlaceHolder();
-
-            private NullPlaceHolder()
-            { }
         }
 
         private class Scope

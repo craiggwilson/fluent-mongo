@@ -211,7 +211,7 @@ namespace FluentMongo.Linq
             if (queryObject.Query == null)
                 return (int)_collection.Count();
 
-            return (int)_collection.Count(queryObject.Query);
+            return (int)_collection.Count(new QueryDocument(queryObject.Query));
         }
 
         private object ExecuteFind(MongoQueryObject queryObject)
@@ -219,32 +219,34 @@ namespace FluentMongo.Linq
             var findAsMethod = typeof(MongoCollection).GetGenericMethod(
                 "FindAs",
                 BindingFlags.Public | BindingFlags.Instance,
-                new[] { typeof(BsonDocument), queryObject.DocumentType },
-                new[] { typeof(BsonDocument) });
+                new[] { queryObject.DocumentType },
+                new[] { typeof(IMongoQuery) });
 
-            BsonDocument queryDocument;
+            QueryDocument queryDocument;
             if (queryObject.Sort != null)
             {
-                queryDocument = new BsonDocument
+                queryDocument = new QueryDocument
                 {
                     {"query", queryObject.Query}, 
                     {"orderby", queryObject.Sort}
                 };
             }
             else
-                queryDocument = queryObject.Query;
+                queryDocument = new QueryDocument(queryObject.Query);
 
             var cursor = findAsMethod.Invoke(_collection, new[] { queryDocument });
             var cursorType = cursor.GetType();
             if (queryObject.Fields.ElementCount > 0)
             {
-                var setFieldsMethod = cursorType.GetGenericMethod(
+                var setFieldsMethod = cursorType.GetMethod(
                     "SetFields",
                    BindingFlags.Public | BindingFlags.Instance,
-                    new[] { typeof(BsonDocument) },
-                    new[] { typeof(BsonDocument) });
+                    null,
+                    new[] { typeof(IMongoFields) },
+                    null
+                );
 
-                setFieldsMethod.Invoke(cursor, new[] { queryObject.Fields });
+                setFieldsMethod.Invoke(cursor, new[] { new FieldsDocument(queryObject.Fields) });
             }
 
             var setLimitMethod = cursorType.GetMethod(
@@ -273,23 +275,23 @@ namespace FluentMongo.Linq
         {
             var options = new MapReduceOptionsBuilder();
 
-            options.SetQuery<BsonDocument>(queryObject.Query);
+            options.SetQuery(new QueryDocument(queryObject.Query));
             options.SetFinalize(new BsonJavaScript(queryObject.FinalizerFunction));
             options.SetLimit(queryObject.NumberToLimit);
 
             if (queryObject.Sort != null)
-                options.SetSortOrder(queryObject.Sort);
+                options.SetSortOrder(new SortByDocument(queryObject.Sort));
 
             if (queryObject.NumberToSkip != 0)
                 throw new InvalidQueryException("MapReduce queries do not support Skips.");
 
-            var mapReduce = _collection.MapReduce<BsonDocument>(
+            var mapReduce = _collection.MapReduce(
                 new BsonJavaScript(queryObject.MapFunction),
                 new BsonJavaScript(queryObject.ReduceFunction),
-                options.ToBsonDocument());
+                options);
 
             var executor = GetExecutor(typeof(BsonDocument), queryObject.Projector, queryObject.Aggregator, true);
-            return executor.Compile().DynamicInvoke(mapReduce.GetResults<BsonDocument>());
+            return executor.Compile().DynamicInvoke(queryObject.Collection.Database[mapReduce.CollectionName].FindAll());
         }
 
         private static LambdaExpression GetExecutor(Type documentType, LambdaExpression projector,
