@@ -1,0 +1,20 @@
+﻿<?xml version="1.0"?>
+<package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <id>FluentMongo</id>
+    <version>1.0.0.0</version>
+    <authors>Craig G. Wilson</authors>
+    <owners>Craig G. Wilson</owners>
+    <licenseUrl>https://github.com/mongodb/mongo-csharp-driver/blob/master/License.txt</licenseUrl>
+    <projectUrl>https://github.com/craiggwilson/fluent-mongo</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Fluently linq querying over the official 10Gen driver</description>
+    <summary>Fluently linq querying over the official 10Gen driver. Please note the source dependency on the last Bson and Driver projects of the official 10Gen c# driver sources</summary>
+    <language>en-US</language>
+  </metadata>
+  <files>
+    <file src="src\FluentMongo\bin\Release\FluentMongo.dll" target="lib" />
+    <file src="packages\mongo-csharp-driver\Bson\bin\Release\MongoDB.Bson.dll" target="lib" />
+    <file src="packages\mongo-csharp-driver\Driver\bin\Release\MongoDB.Driver.dll" target="lib" />
+  </files>
+</package>
