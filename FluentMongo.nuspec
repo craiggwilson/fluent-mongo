@@ -14,7 +14,7 @@
   </metadata>
   <files>
     <file src="src\FluentMongo\bin\Release\FluentMongo.dll" target="lib" />
-    <file src="packages\mongo-csharp-driver\Bson\bin\Release\MongoDB.Bson.dll" target="lib" />
-    <file src="packages\mongo-csharp-driver\Driver\bin\Release\MongoDB.Driver.dll" target="lib" />
+    <file src="src\FluentMongo\bin\Release\MongoDB.Bson.dll" target="lib" />
+    <file src="src\FluentMongo\bin\Release\MongoDB.Driver.dll" target="lib" />
   </files>
 </package>
