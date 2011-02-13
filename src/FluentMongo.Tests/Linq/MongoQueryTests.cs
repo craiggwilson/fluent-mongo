@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
@@ -103,18 +104,22 @@ namespace FluentMongo.Linq
             var people = Collection.AsQueryable()
                 .Select(x => new { Name = x.FirstName + x.LastName, x.Age })
                 .Where(x => x.Age > 21)
+                .QueryDump(Log)
                 .Select(x => x.Name).ToList();
 
             Assert.AreEqual(2, people.Count);
         }
 
+        
         [Test]
         public void Chained2()
         {
             var people = Collection.AsQueryable()
                 .Select(x => new { Name = x.FirstName + x.LastName, x.Age })
                 .Where(x => x.Name == "BobMcBob")
-                .Select(x => x.Name).ToList();
+                .QueryDump(Log)
+                .Select(x => x.Name)
+                .ToList();
 
             Assert.AreEqual(1, people.Count);
         }
@@ -463,5 +468,7 @@ namespace FluentMongo.Linq
 
             Assert.AreEqual(3, people.Count);
         }
+
+        public Action<string> log { get; set; }
     }
 }

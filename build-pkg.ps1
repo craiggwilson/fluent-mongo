@@ -1,3 +1,10 @@
+<# ========================================
+	Mongo C# Contrib - Fluent Mongo 
+   ========================================
+
+	Use this to build the nuget package of FluentMongo
+#>
+	
 $currentPath =  $myinvocation.mycommand.path | split-path -parent
 $currentPath
 push-location

@@ -9,7 +9,11 @@
     <projectUrl>https://github.com/craiggwilson/fluent-mongo</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Fluently linq querying over the official 10Gen driver</description>
-    <summary>Fluently linq querying over the official 10Gen driver. Please note the source dependency on the last Bson and Driver projects of the official 10Gen c# driver sources</summary>
+    <summary>
+      Fluently linq querying over the official 10Gen driver. 
+      Please note the source dependency on the last Bson and Driver projects of the official 10Gen c# driver sources
+      This project currently uses these sources because the official 10gen nuget package is not up to date (but will be resume as a dependency as soon as it is ready)
+    </summary>
     <language>en-US</language>
   </metadata>
   <files>

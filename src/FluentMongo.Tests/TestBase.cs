@@ -38,5 +38,18 @@ namespace FluentMongo
         {
             return _database.GetCollection<T>(name);
         }
+
+        public void Log(Dictionary<string, string> info)
+        {
+            foreach (var item in info)
+            {
+                System.Diagnostics.Trace.WriteLine(string.Format("{0} : {1}", item.Key, item.Value));
+            }
+        }
+
+        public void Log(string info)
+        {
+            System.Diagnostics.Trace.WriteLine(info);
+        }
     }
 }

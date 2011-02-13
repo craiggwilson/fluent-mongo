@@ -71,6 +71,7 @@
     <Compile Include="Linq\MongoQueryable.cs" />
     <Compile Include="Linq\MongoQueryObject.cs" />
     <Compile Include="Linq\MongoQueryProvider.cs" />
+    <Compile Include="Linq\QueryableExtensions.cs" />
     <Compile Include="Linq\Translators\AggregateChecker.cs" />
     <Compile Include="Linq\Translators\AggregateRewriter.cs" />
     <Compile Include="Linq\Translators\DeclaredAliasGatherer.cs" />
@@ -112,6 +113,9 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>powershell.exe "$(SolutionDir)\build-pkg.ps1"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
