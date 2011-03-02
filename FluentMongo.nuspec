@@ -3,22 +3,21 @@
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>FluentMongo</id>
     <version>1.0.0.0</version>
-    <authors>Craig G. Wilson</authors>
+    <authors>Craig G. Wilson, Rui Carvalho</authors>
     <owners>Craig G. Wilson</owners>
     <licenseUrl>https://github.com/mongodb/mongo-csharp-driver/blob/master/License.txt</licenseUrl>
     <projectUrl>https://github.com/craiggwilson/fluent-mongo</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Fluently linq querying over the official 10Gen driver</description>
+    <description>Provides a fluent interface on top of the 10gen driver including Linq.</description>
     <summary>
-      Fluently linq querying over the official 10Gen driver. 
-      Please note the source dependency on the last Bson and Driver projects of the official 10Gen c# driver sources
-      This project currently uses these sources because the official 10gen nuget package is not up to date (but will be resume as a dependency as soon as it is ready)
+      Provides a fluent interface on top of the 10gen driver including Linq.
     </summary>
     <language>en-US</language>
+    <dependencies>
+      <dependency id="mongocsharpdriver" version="0.11.0.4042" />
+    </dependencies>
   </metadata>
   <files>
     <file src="src\FluentMongo\bin\Release\FluentMongo.dll" target="lib" />
-    <file src="src\FluentMongo\bin\Release\MongoDB.Bson.dll" target="lib" />
-    <file src="src\FluentMongo\bin\Release\MongoDB.Driver.dll" target="lib" />
   </files>
 </package>

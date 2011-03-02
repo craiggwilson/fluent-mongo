@@ -1,0 +1,6 @@
+<Modules>
+  <Module PersistentId="2F92C3D3-63A2-4E3F-897E-950401FFBF12" ModuleId="FluentMongo.Tests" />
+  <Module PersistentId="95DCEBC8-5DD1-492C-9E0E-559D3B1A99BE" ModuleId="FluentMongo" />
+  <Module PersistentId="AE5166CD-76B0-4911-BD80-CED9521F37A1" ModuleId="Driver" />
+  <Module PersistentId="0E9A3A2A-49CD-4F6C-847C-DC79B4B65CE6" ModuleId="Bson" />
+</Modules>

@@ -24,7 +24,7 @@ namespace FluentMongo.Linq
                 return q;
             }
 
-            dump.Add("database",command.Collection.Database.ToJson());
+            dump.Add("database",command.Collection.Database.Name);
             dump.Add("collection",command.Collection.Name);
             dump.Add("type",command.DocumentType.FullName);
 

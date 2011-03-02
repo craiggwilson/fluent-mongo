@@ -2,6 +2,7 @@
 [Oo]bj
 [Rr]elease
 [Dd]ebug
+_Resharper*
 App_Data
 *.bak
 *.manifest
