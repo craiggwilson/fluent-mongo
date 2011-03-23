@@ -10,6 +10,8 @@ namespace FluentMongo.Linq
     {
         public ObjectId Id { get; set; }
 
+        public Guid RefId { get; set; }
+
         [BsonElement("fn")]
         public string FirstName { get; set; }
 

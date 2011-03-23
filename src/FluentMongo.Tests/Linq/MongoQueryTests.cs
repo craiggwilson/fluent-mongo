@@ -11,6 +11,8 @@ namespace FluentMongo.Linq
     [TestFixture]
     public class MongoQueryTests : LinqTestBase
     {
+        private readonly Guid _searchableGuid = Guid.NewGuid();
+
         public override void SetupFixture()
         {
             base.SetupFixture();
@@ -30,7 +32,8 @@ namespace FluentMongo.Linq
                         new Address { City = "Seattle", IsInternational = false, AddressType = AddressType.Private },
                         new Address { City = "Paris", IsInternational = true, AddressType = AddressType.Private } 
                     },
-                    EmployerIds = new[] { 1, 2 }
+                    EmployerIds = new[] { 1, 2 },
+                    RefId = _searchableGuid
                 }, SafeMode.True);
 
             Collection.Insert(
@@ -227,12 +230,21 @@ namespace FluentMongo.Linq
         }
 
         [Test]
-        public void LocalEnumerable_Contains()
+        public void LocalArray_String_Contains()
         {
             var names = new[] { "Joe", "Bob" };
             var people = Collection.AsQueryable().Where(x => names.Contains(x.FirstName)).ToList();
 
             Assert.AreEqual(2, people.Count);
+        }
+
+        [Test]
+        public void LocalEnumerable_Guid_Contains()
+        {
+            var ids = new List<Guid> { _searchableGuid }.AsEnumerable();
+            var people = Collection.AsQueryable().Where(x => ids.Contains(x.RefId)).ToList();
+
+            Assert.AreEqual(1, people.Count);
         }
 
         [Test]

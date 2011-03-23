@@ -321,7 +321,9 @@ namespace FluentMongo.Linq.Translators
                 _scopes.Peek().AddCondition(arr);
             }
             else
+            {
                 doc[scope.Key] = BsonValue.Create(scope.Value);
+            }
         }
 
         private void VisitPredicate(Expression expression, bool hasPredicate)
