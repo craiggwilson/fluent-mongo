@@ -32,10 +32,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MongoDB.Bson, Version=0.11.0.4042, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MongoDB.Bson">
       <HintPath>..\..\packages\mongocsharpdriver.0.11.0.4042\lib\net35\MongoDB.Bson.dll</HintPath>
     </Reference>
-    <Reference Include="MongoDB.Driver, Version=0.11.0.4042, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MongoDB.Driver">
       <HintPath>..\..\packages\mongocsharpdriver.0.11.0.4042\lib\net35\MongoDB.Driver.dll</HintPath>
     </Reference>
     <Reference Include="System" />

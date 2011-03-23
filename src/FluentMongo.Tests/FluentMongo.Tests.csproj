@@ -32,22 +32,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MongoDB.Bson, Version=0.11.0.4042, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MongoDB.Bson">
       <HintPath>..\..\packages\mongocsharpdriver.0.11.0.4042\lib\net35\MongoDB.Bson.dll</HintPath>
     </Reference>
-    <Reference Include="MongoDB.Driver, Version=0.11.0.4042, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MongoDB.Driver">
       <HintPath>..\..\packages\mongocsharpdriver.0.11.0.4042\lib\net35\MongoDB.Driver.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=2.5.9.10348, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="nunit.framework">
       <HintPath>..\..\packages\NUnit.2.5.9.10348\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.mocks, Version=2.5.9.10348, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="nunit.mocks">
       <HintPath>..\..\packages\NUnit.2.5.9.10348\lib\nunit.mocks.dll</HintPath>
     </Reference>
-    <Reference Include="pnunit.framework, Version=1.0.4000.25744, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="pnunit.framework">
       <HintPath>..\..\packages\NUnit.2.5.9.10348\lib\pnunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
