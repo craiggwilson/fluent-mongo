@@ -278,6 +278,7 @@ namespace FluentMongo.Linq
             options.SetQuery(new QueryDocument(queryObject.Query));
             options.SetFinalize(new BsonJavaScript(queryObject.FinalizerFunction));
             options.SetLimit(queryObject.NumberToLimit);
+            options.SetOutput(MapReduceOutput.Inline);
 
             if (queryObject.Sort != null)
                 options.SetSortOrder(new SortByDocument(queryObject.Sort));
@@ -291,7 +292,7 @@ namespace FluentMongo.Linq
                 options);
 
             var executor = GetExecutor(typeof(BsonDocument), queryObject.Projector, queryObject.Aggregator, true);
-            return executor.Compile().DynamicInvoke(queryObject.Collection.Database[mapReduce.CollectionName].FindAll());
+            return executor.Compile().DynamicInvoke(mapReduce.InlineResults);
         }
 
         private static LambdaExpression GetExecutor(Type documentType, LambdaExpression projector,
