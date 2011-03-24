@@ -2,7 +2,7 @@
 <package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>FluentMongo</id>
-    <version>1.0.0.0</version>
+    <version>1.0.1.0</version>
     <authors>Craig G. Wilson, Rui Carvalho</authors>
     <owners>Craig G. Wilson</owners>
     <licenseUrl>https://github.com/mongodb/mongo-csharp-driver/blob/master/License.txt</licenseUrl>
@@ -14,7 +14,7 @@
     </summary>
     <language>en-US</language>
     <dependencies>
-      <dependency id="mongocsharpdriver" version="0.11.0.4042" />
+      <dependency id="mongocsharpdriver" version="1.0" />
     </dependencies>
   </metadata>
   <files>
