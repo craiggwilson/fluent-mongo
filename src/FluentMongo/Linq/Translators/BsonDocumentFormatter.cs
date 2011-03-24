@@ -328,7 +328,11 @@ namespace FluentMongo.Linq.Translators
             }
             else
             {
-                doc[scope.Key] = BsonValue.Create(scope.Value);
+                var valueType = scope.Value.GetType();
+                object value = scope.Value;
+                if(valueType != typeof(string) && !typeof(BsonValue).IsAssignableFrom(valueType) && typeof(IEnumerable).IsAssignableFrom(valueType))
+                    value = ((IEnumerable)scope.Value).Cast<object>();
+                doc[scope.Key] = BsonValue.Create(value);
             }
         }
 
