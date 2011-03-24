@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using MongoDB.Bson.DefaultSerializer;
+using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 
 namespace FluentMongo.Linq

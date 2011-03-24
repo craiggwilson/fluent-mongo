@@ -7,7 +7,7 @@ using FluentMongo.Linq.Expressions;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using FluentMongo.Linq.Util;
-using MongoDB.Bson.DefaultSerializer;
+using MongoDB.Bson.Serialization;
 using System.Reflection;
 
 namespace FluentMongo.Linq.Translators
