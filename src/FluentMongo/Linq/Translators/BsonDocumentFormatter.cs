@@ -299,6 +299,12 @@ namespace FluentMongo.Linq.Translators
             if (scope.Value == null)
                 return;
 
+            if (scope.Key == "$elemMatch")
+            {
+                _scopes.Peek().AddCondition(scope.Value);
+                return;
+            }
+
             var doc = _query;
             foreach (var s in _scopes.Reverse()) //as if it were a queue
             {
