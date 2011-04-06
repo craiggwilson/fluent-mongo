@@ -33,6 +33,7 @@ namespace FluentMongo.Linq
                         new Address { City = "Paris", IsInternational = true, AddressType = AddressType.Private } 
                     },
                     EmployerIds = new[] { 1, 2 },
+                    Hobbies = new List<string> { "soccer", "tv" },
                     RefId = _searchableGuid
                 }, SafeMode.True);
 
@@ -47,7 +48,8 @@ namespace FluentMongo.Linq
                     {
                         new Address { City = "Paris", AddressType = AddressType.Private }
                     },
-                    EmployerIds = new[] {1}
+                    EmployerIds = new[] {1},
+                    Hobbies = new List<string> { "soccer", "awesome" },
                 },
                 SafeMode.True);
 
@@ -294,7 +296,15 @@ namespace FluentMongo.Linq
         //}
 
         [Test]
-        public void NestedList_indexer()
+        public void NestedList_Contains()
+        {
+            var people = Collection.AsQueryable().Where(x => x.Hobbies.Contains("soccer")).ToList();
+
+            Assert.AreEqual(2, people.Count);
+        }
+
+        [Test]
+        public void NestedList_Indexer()
         {
             var people = Collection.AsQueryable().Where(x => x.Addresses[1].City == "Tokyo").ToList();
 

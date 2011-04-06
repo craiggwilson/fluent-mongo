@@ -181,10 +181,22 @@ namespace FluentMongo.Linq.Translators
                 {
                     case "Contains":
                         field = m.Arguments[0] as FieldExpression;
-                        if (field == null)
-                            throw new InvalidQueryException(string.Format("The mongo field must be the argument in method {0}.", m.Method.Name));
+                        if (field != null)
+                        {
+                            VisitPredicate(field, true);
+                            AddCondition("$in", EvaluateConstant<IEnumerable>(m.Object).OfType<object>().ToArray());
+                            PopConditionScope();
+                            return m;
+                        }
+
+                        field = m.Object as FieldExpression;
+                        if(field == null)
+                            throw new InvalidQueryException("A mongo field must be a part of the Contains method.");
+                        if (m.Arguments.Count != 1)
+                            throw new NotSupportedException("Only the Contains method with 1 argument is supported.");
+
                         VisitPredicate(field, true);
-                        AddCondition("$in", EvaluateConstant<IEnumerable>(m.Object).OfType<object>().ToArray());
+                        AddCondition(EvaluateConstant<object>(m.Arguments[0]));
                         PopConditionScope();
                         return m;
                 }

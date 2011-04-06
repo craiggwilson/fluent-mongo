@@ -221,7 +221,19 @@ namespace FluentMongo.Linq
         //}
 
         [Test]
-        public void NestedList_indexer()
+        public void NestedList_Contains()
+        {
+            var people = Collection.AsQueryable().Where(x => x.Hobbies.Contains("soccer"));
+
+            var queryObject = ((IMongoQueryable)people).GetQueryObject();
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
+            Assert.AreEqual(0, queryObject.NumberToLimit);
+            Assert.AreEqual(0, queryObject.NumberToSkip);
+            Assert.AreEqual(@"{ ""Hobbies"" : ""soccer"" }", queryObject.Query.ToJson());
+        }
+
+        [Test]
+        public void NestedList_Indexer()
         {
             var people = Collection.AsQueryable().Where(x => x.Addresses[1].City == "Tokyo");
 

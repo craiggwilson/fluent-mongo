@@ -30,6 +30,8 @@ namespace FluentMongo.Linq
         [BsonElement("emps")]
         public int[] EmployerIds { get; set; }
 
+        public List<string> Hobbies { get; set; }
+
         public string MidName { get; set; }
 
         public ObjectId? LinkedId { get; set; }
