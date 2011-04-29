@@ -37,63 +37,7 @@ namespace FluentMongo.Linq.Util
         /// <param name = "json">The json.</param>
         private static void SerializeType(object value, StringBuilder json)
         {
-            if(value == null)
-            {
-                json.Append("null");
-                return;
-            }
-
-            if (value is bool)
-            {
-                json.Append(((bool)value) ? "true" : "false");
-            }
-            else if (value is ObjectId)
-            {
-                json.Append(value.ToString());
-            }
-            else if (value is BsonDocument ||
-                    value is BsonBinaryData ||
-                    value is MongoDBRef ||
-                    value is BsonMinKey ||
-                    value is BsonMaxKey ||
-                    value is BsonJavaScript ||
-                    value is BsonJavaScriptWithScope)
-            {
-                json.Append(value);
-            }
-            else if (value is int ||
-                    value is long ||
-                    value is float ||
-                    value is double)
-            {
-                // Format numbers allways culture invariant
-                // Example: Without this in Germany 10.3 is outputed as 10,3
-                json.Append(((IFormattable)value).ToString("G", CultureInfo.InvariantCulture));
-            }
-            else if (value is Guid)
-            {
-                json.Append(String.Format(@"{{ ""$uid"": ""{0}"" }}", value));
-            }
-            else if (value is string)
-            {
-                json.AppendFormat(@"""{0}""", Escape((string)value));
-            }
-            else if (value is IEnumerable)
-            {
-                json.Append("[ ");
-                var first = true;
-                foreach (var v in (IEnumerable)value)
-                {
-                    if (first)
-                        first = false;
-                    else
-                        json.Append(", ");
-                    SerializeType(v, json);
-                }
-                json.Append(" ]");
-            }
-            else
-                json.AppendFormat(@"""{0}""", Escape(value.ToString()));
+            json.Append(BsonValue.Create(value).ToJson());
         }
 
         /// <summary>
