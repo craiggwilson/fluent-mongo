@@ -491,6 +491,14 @@ namespace FluentMongo.Linq
             Assert.AreEqual(3, people.Count);
         }
 
+		[Test]
+		public void Complex_Disjunction_MoreThan2()
+		{
+			var people = Collection.AsQueryable().Where(x => x.Age == 21 || x.Age == 35 || x.Age == 42).ToList();
+
+			Assert.AreEqual(3, people.Count);
+		}
+
         public Action<string> log { get; set; }
     }
 }
