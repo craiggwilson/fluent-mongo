@@ -391,7 +391,7 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""fn"" : { ""$regex"" : ""Joe"", ""$options"" : """" } }", queryObject.Query.ToJson());
+            Assert.AreEqual(@"{ ""fn"" : /Joe/ }", queryObject.Query.ToJson());
         }
 
         [Test]
@@ -405,7 +405,7 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""fn"" : { ""$regex"" : ""Joe"", ""$options"" : ""i"" } }", queryObject.Query.ToJson());
+            Assert.AreEqual(@"{ ""fn"" : /Joe/i }", queryObject.Query.ToJson());
         }
 
         [Test]
@@ -441,7 +441,7 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""fn"" : { ""$regex"" : ""o"", ""$options"" : """" } }", queryObject.Query.ToJson());
+            Assert.AreEqual(@"{ ""fn"" : /o/ }", queryObject.Query.ToJson());
         }
 
         [Test]
@@ -455,7 +455,7 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""fn"" : { ""$regex"" : ""e$"", ""$options"" : """" } }", queryObject.Query.ToJson());
+            Assert.AreEqual(@"{ ""fn"" : /e$/ }", queryObject.Query.ToJson());
         }
 
         [Test]
@@ -469,7 +469,7 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""fn"" : { ""$regex"" : ""^J"", ""$options"" : """" } }", queryObject.Query.ToJson());
+            Assert.AreEqual(@"{ ""fn"" : /^J/ }", queryObject.Query.ToJson());
         }
 
         [Test]
