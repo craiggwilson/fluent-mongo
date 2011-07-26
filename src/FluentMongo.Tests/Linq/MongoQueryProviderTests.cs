@@ -256,7 +256,7 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""otherAdds"" : { ""$size"" : 1 } }", queryObject.Query.ToJson());
+            Assert.AreEqual(new BsonDocument("otherAdds", new BsonDocument("$size", 1)), queryObject.Query);
         }
 
         [Test]
