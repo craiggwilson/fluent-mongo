@@ -245,19 +245,19 @@ namespace FluentMongo.Linq
             Assert.AreEqual(new BsonDocument("add.city", "my city"), queryObject.Query);
         }
 
-        //[Test]
-        //public void NestedCollection_Count()
-        //{
-        //    var people = from p in Collection.AsQueryable()
-        //                 where p.Addresses.Length == 1
-        //                 select p;
+        [Test]
+        public void NestedCollection_Count()
+        {
+            var people = from p in Collection.AsQueryable()
+                         where p.Addresses.Length == 1
+                         select p;
 
-        //    var queryObject = ((IMongoQueryable)people).GetQueryObject();
-        //    Assert.AreEqual(0, queryObject.Fields.ElementCount);
-        //    Assert.AreEqual(0, queryObject.NumberToLimit);
-        //    Assert.AreEqual(0, queryObject.NumberToSkip);
-        //    Assert.AreEqual(@"{ ""otherAdds"" : { ""$size"" : 1 } }", queryObject.Query.ToJson());
-        //}
+            var queryObject = ((IMongoQueryable)people).GetQueryObject();
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
+            Assert.AreEqual(0, queryObject.NumberToLimit);
+            Assert.AreEqual(0, queryObject.NumberToSkip);
+            Assert.AreEqual(@"{ ""otherAdds"" : { ""$size"" : 1 } }", queryObject.Query.ToJson());
+        }
 
         [Test]
         public void NestedList_Contains()
