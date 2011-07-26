@@ -16,7 +16,7 @@ namespace FluentMongo.Linq
             var people = Collection.AsQueryable().Where(x => x.PrimaryAddress.IsInternational);
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(@"{ ""add.IsInternational"" : true }", queryObject.Query.ToJson());
+            Assert.AreEqual(new BsonDocument("add.IsInternational", true), queryObject.Query);
         }
 
         [Test]
@@ -25,7 +25,7 @@ namespace FluentMongo.Linq
             var people = Collection.AsQueryable().Where(x => !x.PrimaryAddress.IsInternational);
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(@"{ ""$not"" : { ""add.IsInternational"" : true } }", queryObject.Query.ToJson());
+            Assert.AreEqual(new BsonDocument("$not", new BsonDocument("add.IsInternational", true)), queryObject.Query);
         }
 
         [Test]
@@ -34,7 +34,9 @@ namespace FluentMongo.Linq
             var people = Collection.AsQueryable().Where(x => x.PrimaryAddress.IsInternational && x.Age > 21);
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(@"{ ""add.IsInternational"" : true, ""age"" : { ""$gt"" : 21 } }", queryObject.Query.ToJson());
+            Assert.AreEqual(new BsonDocument(
+                                new BsonElement("add.IsInternational", true),
+                                new BsonElement("age", new BsonDocument("$gt", 21))), queryObject.Query);
         }
 
         [Test]
@@ -49,7 +51,7 @@ namespace FluentMongo.Linq
             Assert.AreEqual(2, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""age"" : { ""$gt"" : 21 } }", queryObject.Query.ToJson());
+            Assert.AreEqual(new BsonDocument("age", new BsonDocument("$gt", 21)), queryObject.Query);
         }
 
         [Test]
@@ -64,7 +66,7 @@ namespace FluentMongo.Linq
             Assert.AreEqual(2, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""$where"" : ""((this.fn + this.ln) === \""BobMcBob\"")"" }", queryObject.Query.ToJson());
+            Assert.AreEqual(new BsonDocument("$where", @"((this.fn + this.ln) === ""BobMcBob"")"), queryObject.Query);
         }
 
         [Test]
@@ -76,7 +78,13 @@ namespace FluentMongo.Linq
 
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""age"" : { ""$gt"" : 21, ""$lt"" : 42 } }", queryObject.Query.ToJson());
+            Assert.AreEqual(
+                new BsonDocument(
+                    "age",
+                    new BsonDocument(
+                        new BsonElement("$gt", 21),
+                        new BsonElement("$lt", 42))),
+                queryObject.Query);
         }
 
         [Test]
@@ -88,7 +96,11 @@ namespace FluentMongo.Linq
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""age"" : { ""$gt"" : " + local.Test.Age.ToString() + " } }", queryObject.Query.ToJson());
+            Assert.AreEqual(
+                new BsonDocument(
+                    "age",
+                    new BsonDocument("$gt", local.Test.Age)),
+                queryObject.Query);
         }
 
         [Test]
@@ -100,7 +112,13 @@ namespace FluentMongo.Linq
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""age"" : { ""$gt"" : " + age.ToString() + " } }", queryObject.Query.ToJson());
+            Assert.AreEqual(
+                new BsonDocument(
+                    "age",
+                    new BsonDocument(
+                        "$gt",
+                        age)),
+                queryObject.Query);
         }
 
         [Test]
@@ -112,8 +130,15 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-
-            Assert.AreEqual(@"{ ""$or"" : [{ ""age"" : 21 }, { ""age"" : 35 }] }", queryObject.Query.ToJson());
+            Assert.AreEqual(
+                new BsonDocument(
+                    "$or",
+                    new BsonArray
+                        {
+                            new BsonDocument("age", 21),
+                            new BsonDocument("age", 35)
+                        }),
+                queryObject.Query);
         }
 
         [Test]
@@ -127,7 +152,9 @@ namespace FluentMongo.Linq
             Assert.AreEqual(new BsonDocument { { "fn", 1 } }, queryObject.Fields);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""age"" : { ""$gt"" : 21 } }", queryObject.Query.ToJson());
+            Assert.AreEqual(
+                new BsonDocument("age", new BsonDocument("$gt", 21)),
+                queryObject.Query);
         }
 
         [Test]
@@ -139,7 +166,7 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""add.AddressType"" : " + ((int)AddressType.Company).ToString() + " }", queryObject.Query.ToJson());
+            Assert.AreEqual(new BsonDocument("add.AddressType", (int) AddressType.Company), queryObject.Query);
         }
 
         [Test]
@@ -152,7 +179,13 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""fn"" : { ""$in"" : [""Jack"", ""Bob""] } }", queryObject.Query.ToJson());
+            Assert.AreEqual(
+                new BsonDocument(
+                    "fn",
+                    new BsonDocument(
+                        "$in",
+                        new BsonArray {"Jack", "Bob"})),
+                queryObject.Query);
         }
 
         [Test]
@@ -165,7 +198,13 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""fn"" : { ""$in"" : [""Jack"", ""Bob""] } }", queryObject.Query.ToJson());
+            Assert.AreEqual(
+                new BsonDocument(
+                    "fn",
+                    new BsonDocument(
+                        "$in",
+                        new BsonArray {"Jack", "Bob"})),
+                queryObject.Query);
         }
 
         [Test]
@@ -179,7 +218,7 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""emps"" : { ""$size"" : 1 } }", queryObject.Query.ToJson());
+            Assert.AreEqual(new BsonDocument("emps", new BsonDocument("$size", 1)), queryObject.Query);
         }
 
         [Test]
@@ -191,7 +230,7 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""emps.0"" : 1 }", queryObject.Query.ToJson());
+            Assert.AreEqual(new BsonDocument("emps.0", 1), queryObject.Query);
         }
 
         [Test]
@@ -203,7 +242,7 @@ namespace FluentMongo.Linq
 
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""add.city"" : ""my city"" }", queryObject.Query.ToJson());
+            Assert.AreEqual(new BsonDocument("add.city", "my city"), queryObject.Query);
         }
 
         //[Test]
@@ -229,7 +268,7 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""Hobbies"" : ""soccer"" }", queryObject.Query.ToJson());
+            Assert.AreEqual(new BsonDocument("Hobbies", "soccer"), queryObject.Query);
         }
 
         [Test]
@@ -241,7 +280,7 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""otherAdds.1.city"" : ""Tokyo"" }", queryObject.Query.ToJson());
+            Assert.AreEqual(new BsonDocument("otherAdds.1.city", "Tokyo"), queryObject.Query);
         }
 
         [Test]
@@ -253,7 +292,13 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""otherAdds"" : { ""$elemMatch"" : { ""city"" : ""London"" } } }", queryObject.Query.ToJson());
+            Assert.AreEqual(
+                new BsonDocument(
+                    "otherAdds",
+                    new BsonDocument(
+                        "$elemMatch",
+                        new BsonDocument("city", "London"))),
+                queryObject.Query);
         }
 
         [Test]
@@ -265,7 +310,7 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""emps"" : 1 }" , queryObject.Query.ToJson());
+            Assert.AreEqual(new BsonDocument("emps", 1), queryObject.Query);
         }
 
         [Test]
@@ -277,7 +322,11 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""otherAdds"" : { ""$size"" : 1 } }", queryObject.Query.ToJson());
+            Assert.AreEqual(
+                new BsonDocument(
+                    "otherAdds",
+                    new BsonDocument("$size", 1)),
+                queryObject.Query);
         }
 
         [Test]
@@ -289,7 +338,7 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""otherAdds.1.city"" : ""Tokyo"" }", queryObject.Query.ToJson());
+            Assert.AreEqual(new BsonDocument("otherAdds.1.city", "Tokyo"), queryObject.Query);
         }
 
         [Test]
@@ -301,7 +350,11 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""MidName"" : { ""$ne"" : null } }", queryObject.Query.ToJson());
+            Assert.AreEqual(
+                new BsonDocument(
+                    "MidName",
+                    new BsonDocument("$ne", BsonNull.Value)),
+                queryObject.Query);
         }
 
         [Test]
@@ -313,7 +366,7 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""MidName"" : null }", queryObject.Query.ToJson());
+            Assert.AreEqual(new BsonDocument("MidName", BsonNull.Value), queryObject.Query);
         }
 
         [Test]
@@ -326,7 +379,7 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""LinkedId"" : null }", queryObject.Query.ToJson());
+            Assert.AreEqual(new BsonDocument("LinkedId", BsonNull.Value), queryObject.Query);
         }
 
         [Test]
@@ -337,7 +390,11 @@ namespace FluentMongo.Linq
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""age"" : 1, ""ln"" : -1 }", queryObject.Sort.ToJson());
+            Assert.AreEqual(
+                new BsonDocument(
+                    new BsonElement("age", 1),
+                    new BsonElement("ln", -1)),
+                queryObject.Sort);
         }
 
         [Test]
@@ -350,7 +407,11 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(0, queryObject.Query.ElementCount);
-            Assert.AreEqual(@"{ ""fn"" : 1, ""ln"" : 1 }", queryObject.Fields.ToJson());
+            Assert.AreEqual(
+                new BsonDocument(
+                    new BsonElement("fn", 1),
+                    new BsonElement("ln", 1)),
+                queryObject.Fields);
         }
 
         [Test]
@@ -363,8 +424,19 @@ namespace FluentMongo.Linq
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""fn"" : 1, ""ln"" : 1 }", queryObject.Fields.ToJson());
-            Assert.AreEqual(@"{ ""age"" : { ""$gt"" : 21, ""$lt"" : 42 } }", queryObject.Query.ToJson());
+            Assert.AreEqual(
+                new BsonDocument(
+                    new BsonElement("fn", 1),
+                    new BsonElement("ln", 1)),
+                queryObject.Fields);
+
+            Assert.AreEqual(
+                new BsonDocument(
+                    "age",
+                    new BsonDocument(
+                        new BsonElement("$gt", 21),
+                        new BsonElement("$lt", 42))),
+                queryObject.Query);
         }
 
         [Test]
@@ -417,7 +489,7 @@ namespace FluentMongo.Linq
 
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(@"{ ""fn"" : ""Jack"" }", queryObject.Query.ToJson());
+            Assert.AreEqual(new BsonDocument("fn", "Jack"), queryObject.Query);
         }
 
         [Test]
