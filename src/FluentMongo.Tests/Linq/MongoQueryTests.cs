@@ -76,7 +76,10 @@ namespace FluentMongo.Linq
                     LastName = "McDave",
                     Age = 51,
                     PrimaryAddress = new Address { City = "Washington D.C.", IsInternational = false, AddressType = AddressType.Private },
-                    Addresses = new Address[0],
+                    Addresses = new[]
+                    {
+                        new Address { City = "Washington D.C.", IsInternational = false, AddressType = AddressType.Private },
+                    },
                     EmployerIds = new int[0],
                 },
                 SafeMode.True);
@@ -482,6 +485,18 @@ namespace FluentMongo.Linq
         }
 
         [Test]
+        [TestCase("on", 3)]
+        [TestCase(".", 1)]
+        public void Nested_String_Contains(string value, int expectedCount)
+        {
+            var people = (from p in Collection.AsQueryable()
+                          where p.Addresses.Any(a => a.City.Contains(value))
+                          select p).ToList();
+
+            Assert.AreEqual(expectedCount, people.Count);
+        }
+
+        [Test]
         [TestCase("e", 3)]
         [TestCase("ne", 1)]
         [TestCase(".", 0)]
@@ -491,6 +506,18 @@ namespace FluentMongo.Linq
         {
             var people = (from p in Collection.AsQueryable()
                           where p.FirstName.EndsWith(value)
+                          select p).ToList();
+
+            Assert.AreEqual(expectedCount, people.Count);
+        }
+
+        [Test]
+        [TestCase("on", 2)]
+        [TestCase(".", 1)]
+        public void Nested_String_EndsWith(string value, int expectedCount)
+        {
+            var people = (from p in Collection.AsQueryable()
+                          where p.Addresses.Any(a => a.City.EndsWith(value))
                           select p).ToList();
 
             Assert.AreEqual(expectedCount, people.Count);
