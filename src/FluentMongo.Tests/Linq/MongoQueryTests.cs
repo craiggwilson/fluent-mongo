@@ -490,7 +490,5 @@ namespace FluentMongo.Linq
 
             Assert.AreEqual(3, people.Count);
         }
-
-        public Action<string> log { get; set; }
     }
 }
