@@ -347,7 +347,7 @@ namespace FluentMongo.Linq
         {
             var people = Collection.AsQueryable().Where(x => x.Addresses.Count() == 1).ToList();
 
-            Assert.AreEqual(1, people.Count);
+            Assert.AreEqual(2, people.Count);
         }
 
         [Test]
