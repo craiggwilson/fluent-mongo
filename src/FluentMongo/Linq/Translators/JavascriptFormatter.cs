@@ -196,7 +196,7 @@ namespace FluentMongo.Linq.Translators
                                 _js.AppendFormat(".substr({0})", EvaluateConstant<int>(m.Arguments[0]));
                                 break;
                             case 2:
-                                _js.AppendFormat(".substr({0})", EvaluateConstant<int>(m.Arguments[0]), EvaluateConstant<int>(m.Arguments[1]));
+                                _js.AppendFormat(".substr({0}, {1})", EvaluateConstant<int>(m.Arguments[0]), EvaluateConstant<int>(m.Arguments[1]));
                                 break;
                         }
                         break;
