@@ -68,6 +68,18 @@ namespace FluentMongo.Linq
                     EmployerIds = new[] {3}
                 },
                 SafeMode.True);
+
+            Collection.Insert(
+                new Person
+                {
+                    FirstName = "Dave",
+                    LastName = "McDave",
+                    Age = 51,
+                    PrimaryAddress = new Address { City = "Washington D.C.", IsInternational = false, AddressType = AddressType.Private },
+                    Addresses = new Address[0],
+                    EmployerIds = new int[0],
+                },
+                SafeMode.True);
         }
 
         [Test]
@@ -112,7 +124,7 @@ namespace FluentMongo.Linq
                 .QueryDump(Log)
                 .Select(x => x.Name).ToList();
 
-            Assert.AreEqual(2, people.Count);
+            Assert.AreEqual(3, people.Count);
         }
 
         
@@ -159,7 +171,7 @@ namespace FluentMongo.Linq
             var local = new { Test = new { Age = 21 } };
             var people = Collection.AsQueryable().Where(p => p.Age > local.Test.Age).ToList();
 
-            Assert.AreEqual(2, people.Count);
+            Assert.AreEqual(3, people.Count);
         }
 
         [Test]
@@ -168,7 +180,7 @@ namespace FluentMongo.Linq
             var age = 21;
             var people = Collection.AsQueryable().Where(p => p.Age > age).ToList();
 
-            Assert.AreEqual(2, people.Count);
+            Assert.AreEqual(3, people.Count);
         }
 
         [Test]
@@ -176,7 +188,7 @@ namespace FluentMongo.Linq
         {
             var count = Collection.AsQueryable().Count();
 
-            Assert.AreEqual(3, count);
+            Assert.AreEqual(4, count);
         }
 
         [Test]
@@ -184,7 +196,7 @@ namespace FluentMongo.Linq
         {
             var count = Collection.AsQueryable().Count(x => x.Age > 21);
 
-            Assert.AreEqual(2, count);
+            Assert.AreEqual(3, count);
         }
 
         [Test]
@@ -192,7 +204,7 @@ namespace FluentMongo.Linq
         {
             var count = Collection.AsQueryable().Where(x => x.Age > 21).Count();
 
-            Assert.AreEqual(2, count);
+            Assert.AreEqual(3, count);
         }
 
         [Test]
@@ -210,7 +222,7 @@ namespace FluentMongo.Linq
                           where p.Key("age") > 21
                           select (string)p["fn"]).ToList();
 
-            Assert.AreEqual(2, people.Count);
+            Assert.AreEqual(3, people.Count);
         }
 
         [Test]
@@ -356,7 +368,7 @@ namespace FluentMongo.Linq
         {
             var people = Collection.AsQueryable().Where(x => x.MidName == null).ToArray();
 
-            Assert.AreEqual(2, people.Length);
+            Assert.AreEqual(3, people.Length);
         }
 
         [Test]
@@ -364,7 +376,7 @@ namespace FluentMongo.Linq
         {
             var people = Collection.AsQueryable().Where(x => x.LinkedId == null).ToArray();
 
-            Assert.AreEqual(3, people.Length);
+            Assert.AreEqual(4, people.Length);
         }
 
         [Test]
@@ -383,7 +395,7 @@ namespace FluentMongo.Linq
             var people = (from p in Collection.AsQueryable()
                           select new { Name = p.FirstName + p.LastName }).ToList();
 
-            Assert.AreEqual(3, people.Count);
+            Assert.AreEqual(4, people.Count);
         }
 
         [Test]
@@ -454,33 +466,48 @@ namespace FluentMongo.Linq
         }
 
         [Test]
-        public void String_Contains()
+        [TestCase("o", 2)]
+        [TestCase("av", 1)]
+        [TestCase(".", 0)]
+        [TestCase("(.)", 0)]
+        [TestCase("[oe]", 0)]
+        [TestCase("^.{0,3}$", 0)]
+        public void String_Contains(string value, int expectedCount)
         {
             var people = (from p in Collection.AsQueryable()
-                          where p.FirstName.Contains("o")
+                          where p.FirstName.Contains(value)
                           select p).ToList();
 
-            Assert.AreEqual(2, people.Count);
+            Assert.AreEqual(expectedCount, people.Count);
         }
 
         [Test]
-        public void String_EndsWith()
+        [TestCase("e", 3)]
+        [TestCase("ne", 1)]
+        [TestCase(".", 0)]
+        [TestCase("[oe]", 0)]
+        [TestCase("ea?", 0)]
+        public void String_EndsWith(string value, int expectedCount)
         {
             var people = (from p in Collection.AsQueryable()
-                          where p.FirstName.EndsWith("e")
+                          where p.FirstName.EndsWith(value)
                           select p).ToList();
 
-            Assert.AreEqual(2, people.Count);
+            Assert.AreEqual(expectedCount, people.Count);
         }
 
         [Test]
-        public void String_StartsWith()
+        [TestCase("J", 2)]
+        [TestCase("Ja", 1)]
+        [TestCase(".", 0)]
+        [TestCase("[JBZ]", 0)]
+        public void String_StartsWith(string value, int expectedCount)
         {
             var people = (from p in Collection.AsQueryable()
-                          where p.FirstName.StartsWith("J")
+                          where p.FirstName.StartsWith(value)
                           select p).ToList();
 
-            Assert.AreEqual(2, people.Count);
+            Assert.AreEqual(expectedCount, people.Count);
         }
 
         [Test]
@@ -488,7 +515,7 @@ namespace FluentMongo.Linq
         {
             var people = Collection.AsQueryable().ToList();
 
-            Assert.AreEqual(3, people.Count);
+            Assert.AreEqual(4, people.Count);
         }
     }
 }

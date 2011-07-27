@@ -502,45 +502,57 @@ namespace FluentMongo.Linq
         }
 
         [Test]
-        public void String_Contains()
+        [TestCase("o")]
+        [TestCase(@".$^{[(|)*+?\")]
+        public void String_Contains(string value)
         {
             var people = from p in Collection.AsQueryable()
-                         where p.FirstName.Contains("o")
+                         where p.FirstName.Contains(value)
                          select p;
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(new BsonDocument("fn", new BsonRegularExpression("o")), queryObject.Query);
+            Assert.AreEqual(
+                new BsonDocument("fn", new BsonRegularExpression(Regex.Escape(value))),
+                queryObject.Query);
         }
 
         [Test]
-        public void String_EndsWith()
+        [TestCase("e")]
+        [TestCase(@".$^{[(|)*+?\")]
+        public void String_EndsWith(string value)
         {
             var people = from p in Collection.AsQueryable()
-                         where p.FirstName.EndsWith("e")
+                         where p.FirstName.EndsWith(value)
                          select p;
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(new BsonDocument("fn", new BsonRegularExpression("e$")), queryObject.Query);
+            Assert.AreEqual(
+                new BsonDocument("fn", new BsonRegularExpression(Regex.Escape(value) + "$")),
+                queryObject.Query);
         }
 
         [Test]
-        public void String_StartsWith()
+        [TestCase("J")]
+        [TestCase(@".$^{[(|)*+?\")]
+        public void String_StartsWith(string value)
         {
             var people = from p in Collection.AsQueryable()
-                         where p.FirstName.StartsWith("J")
+                         where p.FirstName.StartsWith(value)
                          select p;
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(new BsonDocument("fn", new BsonRegularExpression("^J")), queryObject.Query);
+            Assert.AreEqual(
+                new BsonDocument("fn", new BsonRegularExpression("^" + Regex.Escape(value))),
+                queryObject.Query);
         }
 
         [Test]
