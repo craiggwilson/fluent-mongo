@@ -5,8 +5,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
-
-using MongoDB.Bson;
 using FluentMongo.Linq.Expressions;
 using FluentMongo.Linq.Util;
 
@@ -228,7 +226,7 @@ namespace FluentMongo.Linq.Translators
                     if (m.Object == null)
                         value = EvaluateConstant<string>(m.Arguments[1]);
                     else
-                        throw new InvalidQueryException(string.Format("Only the static Regex.IsMatch is supported.", m.Method.Name));
+                        throw new InvalidQueryException(string.Format("Only the static Regex.IsMatch is supported."));
 
                     _js.AppendFormat("/{0}/", value);
                     return m;
