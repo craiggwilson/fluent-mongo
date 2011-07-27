@@ -208,7 +208,7 @@ namespace FluentMongo.Linq.Translators
                     throw new InvalidQueryException(string.Format("The mongo field must be the operator for a string operation of type {0}.", m.Method.Name));
                 VisitPredicate(field, true);
 
-                var value = EvaluateConstant<string>(m.Arguments[0]);
+                var value = Regex.Escape(EvaluateConstant<string>(m.Arguments[0]));
                 
                 switch(m.Method.Name)
                 {
