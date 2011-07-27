@@ -181,13 +181,13 @@ namespace FluentMongo.Linq.Translators
                 switch (m.Method.Name)
                 {
                     case "StartsWith":
-                        _js.AppendFormat("/^{0}/", EvaluateConstant<string>(m.Arguments[0]));
+                        _js.AppendFormat("/^{0}/", Regex.Escape(EvaluateConstant<string>(m.Arguments[0])));
                         break;
                     case "EndsWith":
-                        _js.AppendFormat("/{0}$/", EvaluateConstant<string>(m.Arguments[0]));
+                        _js.AppendFormat("/{0}$/", Regex.Escape(EvaluateConstant<string>(m.Arguments[0])));
                         break;
                     case "Contains":
-                        _js.AppendFormat("/{0}/", EvaluateConstant<string>(m.Arguments[0]));
+                        _js.AppendFormat("/{0}/", Regex.Escape(EvaluateConstant<string>(m.Arguments[0])));
                         break;
                     case "SubString":
                         switch(m.Arguments.Count)
