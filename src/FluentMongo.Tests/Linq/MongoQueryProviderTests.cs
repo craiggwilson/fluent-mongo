@@ -24,7 +24,7 @@ namespace FluentMongo.Linq
             var people = Collection.AsQueryable().Where(x => !x.PrimaryAddress.IsInternational);
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(new BsonDocument("$not", new BsonDocument("add.IsInternational", true)), queryObject.Query);
+            Assert.AreEqual(new BsonDocument("add.IsInternational", false), queryObject.Query);
         }
 
         [Test]

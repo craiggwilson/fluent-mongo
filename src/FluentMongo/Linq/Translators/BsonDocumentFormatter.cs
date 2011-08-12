@@ -261,9 +261,18 @@ namespace FluentMongo.Linq.Translators
             switch (u.NodeType)
             {
                 case ExpressionType.Not:
-                    PushConditionScope("$not");
-                    VisitPredicate(u.Operand, false);
-                    PopConditionScope();
+                    if (u.Operand is FieldExpression)
+                    {
+                        VisitPredicate(u.Operand, true);
+                        AddCondition(false);
+                        PopConditionScope();
+                    }
+                    else
+                    {
+                        PushConditionScope("$not");
+                        VisitPredicate(u.Operand, false);
+                        PopConditionScope();
+                    }
                     break;
                 case ExpressionType.ArrayLength:
                     Visit(u.Operand);
