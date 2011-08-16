@@ -345,10 +345,16 @@ namespace FluentMongo.Linq.Translators
             var projection = VisitSequence(source);
             var elementType = projection.Projector.Type;
 
-            ParameterExpression parameter = Expression.Parameter(elementType, "p");
-            LambdaExpression predicate = Expression.Lambda(Expression.TypeIs(parameter, selectedType), parameter);
+            var parameter = Expression.Parameter(elementType, "p");
+            var predicate = Expression.Lambda(Expression.TypeIs(parameter, selectedType), parameter);
 
-            return BindWhere(selectedType, source, predicate);
+            _map[predicate.Parameters[0]] = projection.Projector;
+            var where = Visit(predicate.Body);
+            var alias = new Alias();
+            var fieldProjection = _projector.ProjectFields(projection.Projector, alias, projection.Source.Alias);
+            return new ProjectionExpression(
+                new SelectExpression(alias, fieldProjection.Fields, projection.Source, where),
+                Expression.Convert(fieldProjection.Projector, selectedType));
         }
 
         protected virtual Expression BindGroupBy(Expression source, LambdaExpression keySelector, LambdaExpression elementSelector, LambdaExpression resultSelector)
