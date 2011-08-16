@@ -102,12 +102,11 @@ namespace FluentMongo.Linq
         }
 
         [Test]
-        [Ignore("Mongodb does not support this type of query.")]
         public void Boolean_Inverse()
         {
             var people = Enumerable.ToList(Collection.AsQueryable().Where(x => !x.PrimaryAddress.IsInternational));
 
-            Assert.AreEqual(1, people.Count);
+            Assert.AreEqual(2, people.Count);
         }
 
         [Test]
