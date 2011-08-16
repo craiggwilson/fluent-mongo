@@ -190,6 +190,8 @@ namespace FluentMongo.Linq.Translators
                             if (m.Arguments.Count == 4)
                                 return BindGroupBy(m.Arguments[0], (LambdaExpression)StripQuotes(m.Arguments[1]), (LambdaExpression)StripQuotes(m.Arguments[2]), (LambdaExpression)StripQuotes(m.Arguments[3]));
                             break;
+                        case "OfType":
+                            return BindOfType(m.Arguments[0], m.Method.GetGenericArguments()[0]);
                     }
                     throw new NotSupportedException(string.Format("The method '{0}' is not supported", m.Method.Name));
                 }
@@ -336,6 +338,23 @@ namespace FluentMongo.Linq.Translators
                 return new ProjectionExpression(projection.Source, projection.Projector, lambda);
             }
             return projection;
+        }
+
+        private Expression BindOfType(Expression source, Type selectedType)
+        {
+            var projection = VisitSequence(source);
+            var elementType = projection.Projector.Type;
+
+            var parameter = Expression.Parameter(elementType, "p");
+            var predicate = Expression.Lambda(Expression.TypeIs(parameter, selectedType), parameter);
+
+            _map[predicate.Parameters[0]] = projection.Projector;
+            var where = Visit(predicate.Body);
+            var alias = new Alias();
+            var fieldProjection = _projector.ProjectFields(projection.Projector, alias, projection.Source.Alias);
+            return new ProjectionExpression(
+                new SelectExpression(alias, fieldProjection.Fields, projection.Source, where),
+                Expression.Convert(fieldProjection.Projector, selectedType));
         }
 
         protected virtual Expression BindGroupBy(Expression source, LambdaExpression keySelector, LambdaExpression elementSelector, LambdaExpression resultSelector)

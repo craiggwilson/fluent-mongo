@@ -64,4 +64,9 @@ namespace FluentMongo.Linq
             Name = name;
         }
     }
+
+    public class Employee : Person
+    {
+        public double Salary { get; set; }
+    }
 }
