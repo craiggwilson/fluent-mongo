@@ -566,5 +566,25 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(0, queryObject.Query.ElementCount);
         }
+
+        [Test]
+        public void OfType()
+        {
+            var people = Collection.AsQueryable().OfType<Employee>();
+
+            var queryObject = ((IMongoQueryable)people).GetQueryObject();
+
+            Assert.AreEqual(new BsonDocument("_t", typeof(Employee).Name), queryObject.Query);
+        }
+
+        [Test]
+        public void IsType()
+        {
+            var people = Collection.AsQueryable().Where(p => p is Employee);
+
+            var queryObject = ((IMongoQueryable)people).GetQueryObject();
+
+            Assert.AreEqual(new BsonDocument("_t", typeof(Employee).Name), queryObject.Query);
+        }
     }
 }

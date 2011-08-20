@@ -289,6 +289,16 @@ namespace FluentMongo.Linq.Translators
             return u;
         }
 
+        protected override Expression VisitTypeIs(TypeBinaryExpression b)
+        {
+            var convention = MongoDB.Bson.Serialization.BsonDefaultSerializer.LookupDiscriminatorConvention(b.TypeOperand);
+            var discriminator = convention.GetDiscriminator(b.Expression.Type, b.TypeOperand);
+
+            AddCondition(convention.ElementName, discriminator);
+
+            return b;
+        }
+
         private void AddCondition(object value)
         {
             _scopes.Peek().AddCondition(value ?? BsonNull.Value);
