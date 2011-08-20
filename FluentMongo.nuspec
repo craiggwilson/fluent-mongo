@@ -2,13 +2,14 @@
 <package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>FluentMongo</id>
-    <version>1.1.0.3</version>
+    <version>1.1.0.4</version>
     <authors>Craig G. Wilson</authors>
     <owners>Craig G. Wilson</owners>
     <licenseUrl>https://github.com/mongodb/mongo-csharp-driver/blob/master/License.txt</licenseUrl>
     <projectUrl>https://github.com/craiggwilson/fluent-mongo</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Provides a fluent interface on top of the 10gen driver including Linq.</description>
+    <tags>Fluent mongo mongodb linq nosql</tags>
     <summary>
       Provides a fluent interface on top of the 10gen driver including Linq.
     </summary>
