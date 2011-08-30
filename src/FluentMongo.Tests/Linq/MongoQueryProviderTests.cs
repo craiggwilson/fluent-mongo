@@ -586,5 +586,30 @@ namespace FluentMongo.Linq
 
             Assert.AreEqual(new BsonDocument("_t", typeof(Employee).Name), queryObject.Query);
         }
+
+        [Test]
+        public void ConvertUsingRepresentation()
+        {
+            var id = ObjectId.GenerateNewId();
+            var mapped = GetCollection<MappedField>("mapped").AsQueryable()
+                .Where(m => m.Id == id.ToString() && m.CharAsInt32 == ' ');
+
+            var queryObject = ((IMongoQueryable)mapped).GetQueryObject();
+
+            Assert.AreEqual(new BsonDocument(new BsonElement("_id", id), new BsonElement("CharAsInt32", (int)' ')), queryObject.Query);
+        }
+
+        [Test]
+        public void ConvertUsingCustomSerializer()
+        {
+            RegisterClassMapIfNecessary<ClassMaps.CustomSerializedFieldClassMap>();
+
+            var mapped = GetCollection<CustomSerializedField>("mapped").AsQueryable()
+                .Where(m => m.StringSerializer == "42");
+
+            var queryObject = ((IMongoQueryable)mapped).GetQueryObject();
+
+            Assert.AreEqual(new BsonDocument("StringSerializer", 42), queryObject.Query);
+        }
     }
 }

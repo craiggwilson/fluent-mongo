@@ -59,7 +59,7 @@ namespace FluentMongo.Linq.Expressions
         {
             var e = Visit(field.Expression);
             if (field.Expression != e)
-                field = new FieldExpression(e, field.Alias, field.Name);
+                field = new FieldExpression(e, field.Alias, field.Name, field.MemberMap);
 
             return field;
         }

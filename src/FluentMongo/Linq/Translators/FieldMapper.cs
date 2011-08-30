@@ -24,7 +24,7 @@ namespace FluentMongo.Linq.Translators
         protected override Expression VisitField(FieldExpression field)
         {
             if (_oldAliases.Contains(field.Alias))
-                return new FieldExpression(field.Expression, _newAlias, field.Name);
+                return new FieldExpression(field.Expression, _newAlias, field.Name, field.MemberMap);
             return field;
         }
     }

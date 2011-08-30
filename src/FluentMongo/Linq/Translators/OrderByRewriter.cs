@@ -123,7 +123,7 @@ namespace FluentMongo.Linq.Translators
                     if (fieldDecl.Expression == ordering.Expression || (field != null && fieldDeclExpression != null && field.Alias == fieldDeclExpression.Alias && field.Name == fieldDeclExpression.Name))
                     {
                         if(field != null)
-                            expression = new FieldExpression(field.Expression, alias, fieldDecl.Name);
+                            expression = new FieldExpression(field.Expression, alias, fieldDecl.Name, field.MemberMap);
                         break;
                     }
                     ordinal++;

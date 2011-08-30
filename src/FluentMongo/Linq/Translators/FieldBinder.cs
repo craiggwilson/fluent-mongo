@@ -38,9 +38,9 @@ namespace FluentMongo.Linq.Translators
             if (exp == null)
                 return exp;
 
-            var fieldName = _finder.Find(exp);
-            if (fieldName != null)
-                return new FieldExpression(exp, _alias, fieldName);
+            var result = _finder.Find(exp);
+            if (result != null)
+                return new FieldExpression(exp, _alias, result.FieldName, result.MemberMap);
 
             return base.Visit(exp);
         }
@@ -71,8 +71,15 @@ namespace FluentMongo.Linq.Translators
 
         private class FieldFinder : ExpressionVisitor
         {
+            public class FindResult
+            {
+                public string FieldName;
+                public BsonMemberMap MemberMap;
+            }
+
             private Stack<string> _fieldParts;
             private bool _isBlocked;
+            private BsonMemberMap _bsonMemberMap;
             private readonly Dictionary<MemberInfo, Expression> _memberMap;
             private readonly GroupingKeyDeterminer _determiner;
 
@@ -82,19 +89,21 @@ namespace FluentMongo.Linq.Translators
                 _memberMap = memberMap;
             }
 
-            public string Find(Expression expression)
+            public FindResult Find(Expression expression)
             {
                 if (expression.NodeType == ExpressionType.Parameter)
                     return null;
 
                 _fieldParts = new Stack<string>();
                 _isBlocked = false;
+                _bsonMemberMap = null;
                 Visit(expression);
                 var fieldName = string.Join(".", _fieldParts.ToArray());
-                if (_isBlocked)
-                    fieldName = null;
 
-                return fieldName;
+                if (_isBlocked)
+                    return null;
+
+                return new FindResult { FieldName = fieldName, MemberMap = _bsonMemberMap };
             }
 
             protected override Expression Visit(Expression exp)
@@ -137,8 +146,9 @@ namespace FluentMongo.Linq.Translators
                     }
                     else if (_memberMap.TryGetValue(m.Member, out e) && e is FieldExpression)
                     {
-                        _fieldParts.Push(((FieldExpression)e).Name);
-                        _memberMap[m.Member] = e;
+                        var field = (FieldExpression)e;
+                        _fieldParts.Push(field.Name);
+                        _bsonMemberMap = field.MemberMap;
                         Visit(m.Expression);
                         return m;
                     }
@@ -147,7 +157,10 @@ namespace FluentMongo.Linq.Translators
                         var classMap = BsonClassMap.LookupClassMap(declaringType);
                         var propMap = classMap.GetMemberMap(m.Member.Name);
                         if (propMap != null)
+                        {
                             _fieldParts.Push(propMap.ElementName);
+                            _bsonMemberMap = propMap;
+                        }
                         else
                             _fieldParts.Push(m.Member.Name);
 

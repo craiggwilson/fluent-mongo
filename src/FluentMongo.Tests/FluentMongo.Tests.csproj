@@ -60,6 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Linq\ClassMaps\CustomSerializedFieldClassMap.cs" />
     <Compile Include="Linq\Entities.cs" />
     <Compile Include="Linq\LinqTestBase.cs" />
     <Compile Include="Linq\MapReduceTests.cs" />
@@ -67,6 +68,8 @@
     <Compile Include="Linq\MongoQueryProviderTests.cs" />
     <Compile Include="Linq\MongoQueryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Linq\Serializers\FailingSerializer.cs" />
+    <Compile Include="Linq\Serializers\StringInt32Serializer.cs" />
     <Compile Include="TestBase.cs" />
   </ItemGroup>
   <ItemGroup>
