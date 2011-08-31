@@ -13,6 +13,8 @@ namespace FluentMongo.Linq.ClassMaps
         {
             base.AutoMap();
             base.MapField(f => f.StringSerializer).SetSerializer(new StringInt32Serializer());
+            base.MapField(f => f.ThrowWhenSerializedAndDeserialized).SetSerializer(new FailingStringSerializer());
+            base.MapField(f => f.ThrowWhenDeserialized).SetSerializer(new FailingStringSerializer(false, true));
         }
     }
 }

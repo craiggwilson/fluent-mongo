@@ -7,7 +7,6 @@ using FluentMongo.Linq.Expressions;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using FluentMongo.Linq.Util;
-using MongoDB.Bson.Serialization;
 using System.Reflection;
 
 namespace FluentMongo.Linq.Translators
@@ -215,13 +214,6 @@ namespace FluentMongo.Linq.Translators
                 _isBlocked = true;
                 return m;
             }
-
-            //protected override Expression VisitParameter(ParameterExpression p)
-            //{
-            //    if (p.Type.IsGenericType && p.Type.GetGenericTypeDefinition() == typeof(IGrouping<,>))
-            //        _isBlocked = true;
-            //    return base.VisitParameter(p);
-            //}
 
             private static bool IsCollection(Type type)
             {

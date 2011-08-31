@@ -307,21 +307,38 @@ namespace FluentMongo.Linq.Translators
 
             if (value != null && currentScope.MemberMap != null)
             {
-                var type = value.GetType();
-                var serializer = currentScope.MemberMap.GetSerializer(type);
-                var document = new BsonDocument();
-                using (var writer = BsonWriter.Create(document))
+                try
                 {
-                    writer.WriteStartDocument();
-                    writer.WriteName("tmp");
-                    serializer.Serialize(writer, type, value, currentScope.MemberMap.SerializationOptions);
-                    writer.WriteEndDocument();
+                    value = serializeValue(value, currentScope.MemberMap);
                 }
-
-                value = document["tmp"];
+                catch (Exception ex)
+                {
+                    throw new InvalidQueryException("An error occured when converting value with the serializer", ex);
+                }
             }
 
             currentScope.AddCondition(value ?? BsonNull.Value);
+        }
+
+        private object serializeValue(object value, BsonMemberMap memberMap)
+        {
+            const string tmpField = "tmp";
+
+            var type = value.GetType();
+            var serializer = memberMap.GetSerializer(type);
+
+            var document = new BsonDocument();
+            using (var writer = BsonWriter.Create(document))
+            {
+                // serialize the value inside a document using the provided serializer
+                writer.WriteStartDocument();
+                writer.WriteName(tmpField);
+                serializer.Serialize(writer, type, value, memberMap.SerializationOptions);
+                writer.WriteEndDocument();
+            }
+
+            // extract the serialized value from the document
+            return document[tmpField];
         }
 
         private void AddCondition(string name, object value)

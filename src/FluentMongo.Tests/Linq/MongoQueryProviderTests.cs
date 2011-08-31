@@ -604,12 +604,24 @@ namespace FluentMongo.Linq
         {
             RegisterClassMapIfNecessary<ClassMaps.CustomSerializedFieldClassMap>();
 
-            var mapped = GetCollection<CustomSerializedField>("mapped").AsQueryable()
+            var mapped = GetCollection<CustomSerializedField>("serialized").AsQueryable()
                 .Where(m => m.StringSerializer == "42");
 
             var queryObject = ((IMongoQueryable)mapped).GetQueryObject();
 
             Assert.AreEqual(new BsonDocument("StringSerializer", 42), queryObject.Query);
+        }
+
+        [Test]
+        public void ThrowExceptionWhenProblemWithSerializer()
+        {
+            RegisterClassMapIfNecessary<ClassMaps.CustomSerializedFieldClassMap>();
+
+            var mapped = GetCollection<CustomSerializedField>("serialized").AsQueryable()
+                .Where(m => m.ThrowWhenSerializedAndDeserialized == "test");
+
+            var ex = Assert.Throws<InvalidQueryException>(() => ((IMongoQueryable)mapped).GetQueryObject());
+            Assert.IsInstanceOf<System.InvalidOperationException>(ex.InnerException);
         }
     }
 }

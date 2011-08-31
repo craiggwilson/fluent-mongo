@@ -82,5 +82,7 @@ namespace FluentMongo.Linq
     public class CustomSerializedField
     {
         public string StringSerializer { get; set; }
+        public string ThrowWhenSerializedAndDeserialized { get; set; }
+        public string ThrowWhenDeserialized { get; set; }
     }
 }
