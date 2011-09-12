@@ -69,4 +69,9 @@ namespace FluentMongo.Linq
     {
         public double Salary { get; set; }
     }
+
+    public class NoIdEntity
+    {
+        public string Name { get; set; }
+    }
 }
