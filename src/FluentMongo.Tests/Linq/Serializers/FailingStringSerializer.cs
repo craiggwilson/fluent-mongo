@@ -22,6 +22,13 @@ namespace FluentMongo.Linq.Serializers
 
         public override object Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
         {
+            // when entry is null, do not throw, just read null
+            if (bsonReader.CurrentBsonType == MongoDB.Bson.BsonType.Null)
+            {
+                bsonReader.ReadNull();
+                return null;
+            }
+
             if (_failOnDeserialize)
                 throw new InvalidOperationException();
 

@@ -55,6 +55,10 @@ namespace FluentMongo.Linq.Translators
                     foreach (var expandedField in expandedFields)
                         _queryObject.Fields[expandedField.Name] = 1;
                 }
+
+                // if the _id field isn't selected, then unselect it explicitly
+                if (!_queryObject.Fields.Contains("_id"))
+                    _queryObject.Fields.Add("_id", 0);
             }
 
             if (select.OrderBy != null)

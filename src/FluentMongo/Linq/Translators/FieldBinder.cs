@@ -147,7 +147,10 @@ namespace FluentMongo.Linq.Translators
                     {
                         var field = (FieldExpression)e;
                         _fieldParts.Push(field.Name);
-                        _bsonMemberMap = field.MemberMap;
+
+                        if (_bsonMemberMap == null)
+                            _bsonMemberMap = field.MemberMap;
+
                         Visit(m.Expression);
                         return m;
                     }
@@ -158,7 +161,9 @@ namespace FluentMongo.Linq.Translators
                         if (propMap != null)
                         {
                             _fieldParts.Push(propMap.ElementName);
-                            _bsonMemberMap = propMap;
+
+                            if (_bsonMemberMap == null)
+                                _bsonMemberMap = propMap;
                         }
                         else
                             _fieldParts.Push(m.Member.Name);

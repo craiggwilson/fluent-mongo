@@ -27,26 +27,72 @@ namespace FluentMongo.Linq
 
             CustomCollection.Insert(new CustomSerializedField
             {
-                StringSerializer = "42",
+                StringSerializer = "42"
+            });
+
+            CustomCollection.Insert(new CustomSerializedField
+            {
+                StringSerializer = "41",
                 ThrowWhenDeserialized = "test"
             });
         }
 
         [Test]
-        public void UseConverterInProjection()
+        public void UseConverterInFullEntityProjection()
         {
-            var mapped = MappedCollection.AsQueryable().FirstOrDefault();
+            var mapped = MappedCollection.AsQueryable().First();
 
             Assert.NotNull(mapped.Id);
             Assert.AreEqual(' ', mapped.CharAsInt32);
         }
 
         [Test]
+        public void UseConverterInPartialEntityProjection()
+        {
+            var mapped = MappedCollection.AsQueryable().Select(m => m.CharAsInt32).First();
+
+            Assert.AreEqual(' ', mapped);
+        }
+
+        [Test]
+        public void UseCustomSerializerInPartialEntityProjection()
+        {
+            var serialized = CustomCollection.AsQueryable().Select(s => s.StringSerializer).First();
+
+            Assert.AreEqual("42", serialized);
+        }
+
+        [Test]
+        public void UseCustomSerializerInArraySelectionArray()
+        {
+            var serialized = CustomCollection.AsQueryable().Where(s => new[] { "42", "43" }.Contains(s.StringSerializer)).Single();
+
+            Assert.AreEqual("42", serialized.StringSerializer);
+        }
+
+        [Test]
+        public void UseCustomSerializerInArraySelectionList()
+        {
+            var serialized = CustomCollection.AsQueryable().Where(s => new List<string>(new[] { "42", "43" }).Contains(s.StringSerializer)).Single();
+
+            Assert.AreEqual("42", serialized.StringSerializer);
+        }
+
+        [Test]
+        public void UseCustomSerializerInMultipleComparison()
+        {
+            var serialized = CustomCollection.AsQueryable().Where(s => s.StringSerializer == "42" || s.StringSerializer == "43").Single();
+
+            Assert.AreEqual("42", serialized.StringSerializer);
+        }
+
+        [Test]
         public void UseFailingSerializerInProjection()
         {
-            var serialized = CustomCollection.AsQueryable().Select(s => s.ThrowWhenDeserialized);
+            var serialized = CustomCollection.AsQueryable().Where(c => c.ThrowWhenDeserialized != null).Select(s => s.ThrowWhenDeserialized);
 
-            Assert.Throws<InvalidOperationException>(() => serialized.First());
+            var ex = Assert.Throws<System.Reflection.TargetInvocationException>(() => serialized.First());
+            Assert.IsInstanceOf<InvalidOperationException>(ex.InnerException);
         }
     }
 }

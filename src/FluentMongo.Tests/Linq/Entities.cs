@@ -85,4 +85,9 @@ namespace FluentMongo.Linq
         public string ThrowWhenSerializedAndDeserialized { get; set; }
         public string ThrowWhenDeserialized { get; set; }
     }
+
+    public class NoIdEntity
+    {
+        public string Name { get; set; }
+    }
 }

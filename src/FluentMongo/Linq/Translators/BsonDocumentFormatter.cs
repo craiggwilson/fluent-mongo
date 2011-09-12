@@ -309,7 +309,21 @@ namespace FluentMongo.Linq.Translators
             {
                 try
                 {
-                    value = serializeValue(value, currentScope.MemberMap);
+                    var memberType = currentScope.MemberMap.MemberType;
+
+                    // if the member type closes IEnumerable<> then find the element type
+                    if (typeof(IEnumerable<>).IsOpenTypeAssignableFrom(memberType))
+                        memberType = memberType.GetInterfaceClosing(typeof(IEnumerable<>)).GetGenericArguments()[0];
+
+                    // if the current type is not the MemberType and is IEnumerable, then it might be a $in query
+                    if (memberType != value.GetType() && value is IEnumerable)
+                    {
+                        value = ((IEnumerable)value).OfType<object>().Select(v => serializeValue(v, currentScope.MemberMap)).ToArray();
+                    }
+                    else
+                    {
+                        value = serializeValue(value, currentScope.MemberMap);
+                    }
                 }
                 catch (Exception ex)
                 {
