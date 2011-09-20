@@ -318,11 +318,11 @@ namespace FluentMongo.Linq.Translators
                     // if the current type is not the MemberType and is IEnumerable, then it might be a $in query
                     if (memberType != value.GetType() && value is IEnumerable)
                     {
-                        value = ((IEnumerable)value).OfType<object>().Select(v => serializeValue(v, currentScope.MemberMap)).ToArray();
+                        value = ((IEnumerable)value).OfType<object>().Select(v => SerializeValue(v, currentScope.MemberMap)).ToArray();
                     }
                     else
                     {
-                        value = serializeValue(value, currentScope.MemberMap);
+                        value = SerializeValue(value, currentScope.MemberMap);
                     }
                 }
                 catch (Exception ex)
@@ -334,7 +334,7 @@ namespace FluentMongo.Linq.Translators
             currentScope.AddCondition(value ?? BsonNull.Value);
         }
 
-        private object serializeValue(object value, BsonMemberMap memberMap)
+        private object SerializeValue(object value, BsonMemberMap memberMap)
         {
             const string tmpField = "tmp";
 
