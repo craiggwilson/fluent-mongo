@@ -101,5 +101,13 @@ namespace FluentMongo.Linq
 
             return methods.SingleOrDefault();
         }
+
+        public static Type GetInterfaceClosing(this Type type, Type openType)
+        {
+            if (!openType.IsGenericTypeDefinition)
+                throw new ArgumentException("Must be an open generic type.", "openType");
+
+            return type.GetInterfaces().FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == openType);
+        }
     }
 }

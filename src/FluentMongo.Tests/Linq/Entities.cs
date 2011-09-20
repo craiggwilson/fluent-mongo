@@ -69,4 +69,25 @@ namespace FluentMongo.Linq
     {
         public double Salary { get; set; }
     }
+
+    public class MappedField
+    {
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
+
+        [BsonRepresentation(BsonType.Int32)]
+        public char CharAsInt32 { get; set; }
+    }
+
+    public class CustomSerializedField
+    {
+        public string StringSerializer { get; set; }
+        public string ThrowWhenSerializedAndDeserialized { get; set; }
+        public string ThrowWhenDeserialized { get; set; }
+    }
+
+    public class NoIdEntity
+    {
+        public string Name { get; set; }
+    }
 }

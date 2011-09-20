@@ -33,7 +33,7 @@ namespace FluentMongo.Linq.Translators
         {
             Alias newAlias;
             if (_map.TryGetValue(field.Alias, out newAlias))
-                return new FieldExpression(field.Expression, newAlias, field.Name);
+                return new FieldExpression(field.Expression, newAlias, field.Name, field.MemberMap);
 
             return field;
         }

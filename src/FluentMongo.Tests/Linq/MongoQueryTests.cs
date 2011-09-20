@@ -12,6 +12,7 @@ namespace FluentMongo.Linq
     public class MongoQueryTests : LinqTestBase
     {
         private readonly Guid _searchableGuid = Guid.NewGuid();
+        private MongoCollection<NoIdEntity> NoIdCollection;
 
         public override void SetupFixture()
         {
@@ -83,6 +84,10 @@ namespace FluentMongo.Linq
                     EmployerIds = new int[0],
                 },
                 SafeMode.True);
+
+            NoIdCollection = GetCollection<NoIdEntity>("no_id");
+
+            NoIdCollection.Insert(new NoIdEntity { Name = "Bob" });
         }
 
         [Test]
@@ -542,6 +547,14 @@ namespace FluentMongo.Linq
             var people = Collection.AsQueryable().ToList();
 
             Assert.AreEqual(4, people.Count);
+        }
+
+        [Test]
+        public void UseSelectorInEntityWithoutId()
+        {
+            var noIdName = NoIdCollection.AsQueryable().Select(n => n.Name).First();
+
+            Assert.AreEqual("Bob", noIdName);
         }
     }
 }

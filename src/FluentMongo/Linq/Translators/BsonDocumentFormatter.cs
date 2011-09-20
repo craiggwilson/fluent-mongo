@@ -7,6 +7,8 @@ using System.Text.RegularExpressions;
 
 using FluentMongo.Linq.Expressions;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.IO;
 
 namespace FluentMongo.Linq.Translators
 {
@@ -83,12 +85,12 @@ namespace FluentMongo.Linq.Translators
         {
             if (!_hasPredicate)
             {
-                PushConditionScope(f.Name);
+                PushConditionScope(f.Name, f.MemberMap);
                 AddCondition(true);
                 PopConditionScope();
             }
             else
-                PushConditionScope(f.Name);
+                PushConditionScope(f.Name, f.MemberMap);
             return f;
         }
 
@@ -301,7 +303,56 @@ namespace FluentMongo.Linq.Translators
 
         private void AddCondition(object value)
         {
-            _scopes.Peek().AddCondition(value ?? BsonNull.Value);
+            var currentScope = _scopes.Peek();
+
+            if (value != null && currentScope.MemberMap != null)
+            {
+                try
+                {
+                    var memberType = currentScope.MemberMap.MemberType;
+
+                    // if the member type closes IEnumerable<> then find the element type
+                    if (typeof(IEnumerable<>).IsOpenTypeAssignableFrom(memberType))
+                        memberType = memberType.GetInterfaceClosing(typeof(IEnumerable<>)).GetGenericArguments()[0];
+
+                    // if the current type is not the MemberType and is IEnumerable, then it might be a $in query
+                    if (memberType != value.GetType() && value is IEnumerable)
+                    {
+                        value = ((IEnumerable)value).OfType<object>().Select(v => serializeValue(v, currentScope.MemberMap)).ToArray();
+                    }
+                    else
+                    {
+                        value = serializeValue(value, currentScope.MemberMap);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidQueryException("An error occured when converting value with the serializer", ex);
+                }
+            }
+
+            currentScope.AddCondition(value ?? BsonNull.Value);
+        }
+
+        private object serializeValue(object value, BsonMemberMap memberMap)
+        {
+            const string tmpField = "tmp";
+
+            var type = value.GetType();
+            var serializer = memberMap.GetSerializer(type);
+
+            var document = new BsonDocument();
+            using (var writer = BsonWriter.Create(document))
+            {
+                // serialize the value inside a document using the provided serializer
+                writer.WriteStartDocument();
+                writer.WriteName(tmpField);
+                serializer.Serialize(writer, type, value, memberMap.SerializationOptions);
+                writer.WriteEndDocument();
+            }
+
+            // extract the serialized value from the document
+            return document[tmpField];
         }
 
         private void AddCondition(string name, object value)
@@ -313,15 +364,20 @@ namespace FluentMongo.Linq.Translators
 
         private void PushConditionScope(string name)
         {
+            PushConditionScope(name, null);
+        }
+
+        private void PushConditionScope(string name, BsonMemberMap memberMap)
+        {
             if (_scopes.Count == 0)
             {
                 object value = null;
                 if (_query.Contains(name))
                     value = _query[name];
-                _scopes.Push(new Scope(name, value));
+                _scopes.Push(new Scope(name, value, memberMap));
             }
             else
-                _scopes.Push(_scopes.Peek().CreateChildScope(name));
+                _scopes.Push(_scopes.Peek().CreateChildScope(name, memberMap));
         }
 
         private void PopConditionScope()
@@ -394,10 +450,13 @@ namespace FluentMongo.Linq.Translators
 
             public object Value { get; private set; }
 
-            public Scope(string key, object initialValue)
+            public BsonMemberMap MemberMap { get; private set; }
+
+            public Scope(string key, object initialValue, BsonMemberMap memberMap)
             {
                 Key = key;
                 Value = initialValue;
+                MemberMap = memberMap;
             }
 
             public void AddCondition(object value)
@@ -413,17 +472,17 @@ namespace FluentMongo.Linq.Translators
                     Value = value;
             }
 
-            public Scope CreateChildScope(string name)
+            public Scope CreateChildScope(string name, BsonMemberMap memberMap)
             {
                 if (Value is BsonDocument)
                 {
                     BsonValue currentValue;
                     if(!((BsonDocument)Value).TryGetValue(name, out currentValue))
                         currentValue = null;
-                    return new Scope(name, currentValue);
+                    return new Scope(name, currentValue, memberMap ?? MemberMap);
                 }
 
-                return new Scope(name, null);
+                return new Scope(name, null, memberMap ?? MemberMap);
             }
         }
     }

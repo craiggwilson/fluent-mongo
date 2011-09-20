@@ -8,7 +8,7 @@ namespace FluentMongo.Linq.Expressions
     {
         public static bool HasSelectAllField(this IEnumerable<FieldDeclaration> fields)
         {
-            return fields == null || fields.Any(f => f.Name == "*");
+            return fields == null || fields.Count() == 0 || fields.Any(f => f.Name == "*");
         }
 
         public static SelectExpression AddField(this SelectExpression select, FieldDeclaration field)

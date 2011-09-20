@@ -48,7 +48,7 @@ namespace FluentMongo.Linq.Translators
                     Alias alias = _existingAliases.Contains(field.Alias) ? field.Alias : _newAlias;
                     var fieldName = GetUniqueFieldName(field.Name);
                     _fields.Add(new FieldDeclaration(fieldName, field));
-                    return new FieldExpression(exp, alias, field.Name);
+                    return new FieldExpression(exp, alias, field.Name, field.MemberMap);
                 }
                 else
                 {

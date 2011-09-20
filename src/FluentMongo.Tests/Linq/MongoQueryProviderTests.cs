@@ -47,7 +47,7 @@ namespace FluentMongo.Linq
                 .Select(x => x.Name);
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(2, queryObject.Fields.ElementCount);
+            Assert.AreEqual(3, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(new BsonDocument("age", new BsonDocument("$gt", 21)), queryObject.Query);
@@ -62,7 +62,7 @@ namespace FluentMongo.Linq
                 .Select(x => x.Name);
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(2, queryObject.Fields.ElementCount);
+            Assert.AreEqual(3, queryObject.Fields.ElementCount);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(new BsonDocument("$where", @"((this.fn + this.ln) === ""BobMcBob"")"), queryObject.Query);
@@ -148,7 +148,7 @@ namespace FluentMongo.Linq
                          select (string)p["fn"];
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(new BsonDocument { { "fn", 1 } }, queryObject.Fields);
+            Assert.AreEqual(new BsonDocument { { "fn", 1 }, { "_id", 0 } }, queryObject.Fields);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(
@@ -409,7 +409,8 @@ namespace FluentMongo.Linq
             Assert.AreEqual(
                 new BsonDocument(
                     new BsonElement("fn", 1),
-                    new BsonElement("ln", 1)),
+                    new BsonElement("ln", 1),
+                    new BsonElement("_id", 0)),
                 queryObject.Fields);
         }
 
@@ -426,7 +427,8 @@ namespace FluentMongo.Linq
             Assert.AreEqual(
                 new BsonDocument(
                     new BsonElement("fn", 1),
-                    new BsonElement("ln", 1)),
+                    new BsonElement("ln", 1),
+                    new BsonElement("_id", 0)),
                 queryObject.Fields);
 
             Assert.AreEqual(
@@ -585,6 +587,57 @@ namespace FluentMongo.Linq
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
 
             Assert.AreEqual(new BsonDocument("_t", typeof(Employee).Name), queryObject.Query);
+        }
+
+        [Test]
+        public void ConvertUsingRepresentation()
+        {
+            var id = ObjectId.GenerateNewId();
+            var mapped = GetCollection<MappedField>("mapped").AsQueryable()
+                .Where(m => m.Id == id.ToString() && m.CharAsInt32 == ' ');
+
+            var queryObject = ((IMongoQueryable)mapped).GetQueryObject();
+
+            Assert.AreEqual(new BsonDocument(new BsonElement("_id", id), new BsonElement("CharAsInt32", (int)' ')), queryObject.Query);
+        }
+
+        [Test]
+        public void ConvertUsingCustomSerializer()
+        {
+            RegisterClassMapIfNecessary<ClassMaps.CustomSerializedFieldClassMap>();
+
+            var mapped = GetCollection<CustomSerializedField>("serialized").AsQueryable()
+                .Where(m => m.StringSerializer == "42");
+
+            var queryObject = ((IMongoQueryable)mapped).GetQueryObject();
+
+            Assert.AreEqual(new BsonDocument("StringSerializer", 42), queryObject.Query);
+        }
+
+        [Test]
+        public void ThrowExceptionWhenProblemWithSerializer()
+        {
+            RegisterClassMapIfNecessary<ClassMaps.CustomSerializedFieldClassMap>();
+
+            var mapped = GetCollection<CustomSerializedField>("serialized").AsQueryable()
+                .Where(m => m.ThrowWhenSerializedAndDeserialized == "test");
+
+            var ex = Assert.Throws<InvalidQueryException>(() => ((IMongoQueryable)mapped).GetQueryObject());
+            Assert.IsInstanceOf<System.InvalidOperationException>(ex.InnerException);
+        }
+
+        [Test]
+        public void ProjectionWithoutIdShouldUnselectItExplicitly()
+        {
+            var noId = GetCollection<NoIdEntity>("no_id").AsQueryable().Select(n => n.Name);
+
+            var queryObject = ((IMongoQueryable)noId).GetQueryObject();
+
+            Assert.AreEqual(
+                new BsonDocument(
+                    new BsonElement("Name", 1),
+                    new BsonElement("_id", 0)),
+                queryObject.Fields);
         }
     }
 }
