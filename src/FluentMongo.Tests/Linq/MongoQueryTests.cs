@@ -397,6 +397,14 @@ namespace FluentMongo.Linq
         }
 
         [Test]
+        public void OrWithAny()
+        {
+            var people = Collection.AsQueryable().Where(p => p.Addresses.Any(a => a.City == "Seattle")
+                                                            || p.Addresses.Any(a => a.City == "Chicago")).ToList();
+            Assert.AreEqual(2, people.Count());
+        }
+
+        [Test]
         public void Projection()
         {
             var people = (from p in Collection.AsQueryable()
