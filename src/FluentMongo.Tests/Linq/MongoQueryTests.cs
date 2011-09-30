@@ -13,6 +13,7 @@ namespace FluentMongo.Linq
     {
         private readonly Guid _searchableGuid = Guid.NewGuid();
         private MongoCollection<NoIdEntity> NoIdCollection;
+        private MongoCollection<CustomIdEntity> CustomIdCollection;
 
         public override void SetupFixture()
         {
@@ -88,6 +89,9 @@ namespace FluentMongo.Linq
             NoIdCollection = GetCollection<NoIdEntity>("no_id");
 
             NoIdCollection.Insert(new NoIdEntity { Name = "Bob" });
+
+            CustomIdCollection = GetCollection<CustomIdEntity>("custom_id");
+            CustomIdCollection.Insert(new CustomIdEntity { Id = new CustomId { FirstName = "John", LastName = "Doe" } });
         }
 
         [Test]
@@ -555,6 +559,24 @@ namespace FluentMongo.Linq
             var noIdName = NoIdCollection.AsQueryable().Select(n => n.Name).First();
 
             Assert.AreEqual("Bob", noIdName);
+        }
+
+        [Test]
+        public void QueryWithCustomIdEntity()
+        {
+            var customId = CustomIdCollection.AsQueryable().Where(c => c.Id.FirstName == "John").Single();
+
+            Assert.AreEqual("John", customId.Id.FirstName);
+            Assert.AreEqual("Doe", customId.Id.LastName);
+        }
+
+        [Test]
+        public void SelectSubIdFieldsWithCustomIdEntity()
+        {
+            var customId = CustomIdCollection.AsQueryable().Select(c => new { c.Id.FirstName, c.Id.LastName }).Single();
+
+            Assert.AreEqual("John", customId.FirstName);
+            Assert.AreEqual("Doe", customId.LastName);
         }
     }
 }
