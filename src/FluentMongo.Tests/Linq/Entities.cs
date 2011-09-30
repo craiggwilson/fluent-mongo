@@ -90,4 +90,15 @@ namespace FluentMongo.Linq
     {
         public string Name { get; set; }
     }
+
+    public class CustomId
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+    }
+
+    public class CustomIdEntity
+    {
+        public CustomId Id { get; set; }
+    }
 }

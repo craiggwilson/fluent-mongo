@@ -639,5 +639,29 @@ namespace FluentMongo.Linq
                     new BsonElement("_id", 0)),
                 queryObject.Fields);
         }
+
+        [Test]
+        public void QueryWithCustomIdEntity()
+        {
+            var customId = GetCollection<CustomIdEntity>("custom_id").AsQueryable().Where(c => c.Id.FirstName == "firstname");
+            var queryObject = ((IMongoQueryable)customId).GetQueryObject();
+
+            Assert.AreEqual(
+                new BsonDocument(new BsonElement("_id.FirstName", "firstname")),
+                queryObject.Query);
+        }
+
+        [Test]
+        public void SelectSubIdFieldsWithCustomIdEntity()
+        {
+            var customId = GetCollection<CustomIdEntity>("custom_id").AsQueryable().Select(c => new { c.Id.FirstName, c.Id.LastName });
+            var queryObject = ((IMongoQueryable)customId).GetQueryObject();
+
+            Assert.AreEqual(
+                new BsonDocument(
+                    new BsonElement("_id.FirstName", 1),
+                    new BsonElement("_id.LastName", 1)),
+                queryObject.Fields);
+        }
     }
 }

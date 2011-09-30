@@ -1,6 +1,7 @@
 ﻿using System;
 using FluentMongo.Linq.Expressions;
 using System.Linq.Expressions;
+using System.Linq;
 
 namespace FluentMongo.Linq.Translators
 {
@@ -57,7 +58,7 @@ namespace FluentMongo.Linq.Translators
                 }
 
                 // if the _id field isn't selected, then unselect it explicitly
-                if (!_queryObject.Fields.Contains("_id"))
+                if (!_queryObject.Fields.Any(e => e.Name.StartsWith("_id")))
                     _queryObject.Fields.Add("_id", 0);
             }
 
