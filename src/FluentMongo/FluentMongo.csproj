@@ -86,13 +86,12 @@
     <Compile Include="Linq\Translators\AggregateRewriter.cs" />
     <Compile Include="Linq\QueryFormatters\BsonElementsFormatter.cs" />
     <Compile Include="Linq\Translators\DeclaredAliasGatherer.cs" />
-    <Compile Include="Linq\Translators\BsonDocumentFormatter.cs" />
     <Compile Include="Linq\Translators\ExpressionReplacer.cs" />
     <Compile Include="Linq\Translators\FieldBinder.cs" />
     <Compile Include="Linq\Translators\FieldGatherer.cs" />
     <Compile Include="Linq\Translators\FieldMapper.cs" />
     <Compile Include="Linq\Translators\FieldProjector.cs" />
-    <Compile Include="Linq\Translators\JavascriptFormatter.cs" />
+    <Compile Include="Linq\QueryFormatters\JavascriptFormatter.cs" />
     <Compile Include="Linq\Translators\MapReduceFinalizerFunctionBuilder.cs" />
     <Compile Include="Linq\Translators\MapReduceMapFunctionBuilder.cs" />
     <Compile Include="Linq\Translators\MapReduceReduceFunctionBuilder.cs" />

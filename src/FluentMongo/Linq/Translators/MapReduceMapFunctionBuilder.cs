@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using FluentMongo.Linq.Expressions;
 using System.Linq.Expressions;
+using FluentMongo.Linq.QueryFormatters;
 
 namespace FluentMongo.Linq.Translators
 {

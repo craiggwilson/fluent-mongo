@@ -123,7 +123,7 @@ namespace FluentMongo.Linq
         [Test]
         public void Disjunction()
         {
-            var people = Collection.AsQueryable().Where(x => x.Age == 21 || x.Age == 35);
+            var people = Collection.AsQueryable().Where(x => x.Age == 21 || x.Age == 35 || x.Age == 42);
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
             Assert.AreEqual(0, queryObject.Fields.ElementCount);
@@ -135,7 +135,8 @@ namespace FluentMongo.Linq
                     new BsonArray
                         {
                             new BsonDocument("age", 21),
-                            new BsonDocument("age", 35)
+                            new BsonDocument("age", 35),
+                            new BsonDocument("age", 42)
                         }),
                 queryObject.Query);
         }

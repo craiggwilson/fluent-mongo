@@ -91,8 +91,7 @@ namespace FluentMongo.Linq
         {
             var serialized = CustomCollection.AsQueryable().Where(c => c.ThrowWhenDeserialized != null).Select(s => s.ThrowWhenDeserialized);
 
-            var ex = Assert.Throws<System.Reflection.TargetInvocationException>(() => serialized.First());
-            Assert.IsInstanceOf<InvalidOperationException>(ex.InnerException);
+            Assert.Throws<System.Reflection.TargetInvocationException>(() => serialized.First());
         }
     }
 }
