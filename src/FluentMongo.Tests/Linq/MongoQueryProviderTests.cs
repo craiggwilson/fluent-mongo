@@ -423,7 +423,6 @@ namespace FluentMongo.Linq
         [Test]
         public void NullCheckOnClassTypes()
         {
-            //BUG: this a bug related to id generation...
             var people = Collection.AsQueryable().Where(x => x.LinkedId == null);
 
             var queryObject = ((IMongoQueryable)people).GetQueryObject();
@@ -431,6 +430,24 @@ namespace FluentMongo.Linq
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(new BsonDocument("LinkedId", BsonNull.Value), queryObject.Query);
+        }
+
+        [Test]
+        public void Nullable()
+        {
+            var oid = ObjectId.GenerateNewId();
+            var people = Collection.AsQueryable().Where(x => x.LinkedId != null && x.LinkedId == oid);
+
+            var queryObject = ((IMongoQueryable)people).GetQueryObject();
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
+            Assert.AreEqual(0, queryObject.NumberToLimit);
+            Assert.AreEqual(0, queryObject.NumberToSkip);
+            Assert.AreEqual(
+                new BsonDocument("$and",
+                    new BsonArray(new [] {
+                        new BsonDocument("LinkedId", new BsonDocument("$ne", BsonNull.Value)),
+                        new BsonDocument("LinkedId", oid)})), 
+                queryObject.Query);
         }
 
         [Test]
