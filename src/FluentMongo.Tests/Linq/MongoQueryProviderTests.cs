@@ -86,6 +86,26 @@ namespace FluentMongo.Linq
                 queryObject.Query);
         }
 
+
+        [Test]
+        public void Conjunctions_and_Disjunctions()
+        {
+            var people = Collection.AsQueryable().Where(p => p.Addresses.Any(x =>
+                (x.AddressType == AddressType.Company && x.City == "Dallas") ||
+                (x.AddressType == AddressType.Private && x.City == "London")) &&
+                p.Age == 32);
+
+            var queryObject = ((IMongoQueryable)people).GetQueryObject();
+            Assert.AreEqual(0, queryObject.NumberToLimit);
+            Assert.AreEqual(0, queryObject.NumberToSkip);
+
+            Assert.AreEqual(
+                new BsonDocument(
+                    new BsonElement("$or", new BsonArray(new[] { new BsonDocument("AddressType", 0).Add("city", "Dallas"), new BsonDocument("AddressType", 1).Add("city", "London") })),
+                    new BsonElement("otherAdds", new BsonDocument("$elemMatch", new BsonDocument("age", 32)))),
+                queryObject.Query);
+        }
+
         [Test]
         public void ConstraintsAgainstLocalReferenceMember()
         {
@@ -142,7 +162,7 @@ namespace FluentMongo.Linq
         }
 
         [Test]
-        public void BsonDocumentQuery()
+        public void DocumentQuery()
         {
             var people = from p in BsonDocumentCollection.AsQueryable()
                          where p.Key("age") > 21
