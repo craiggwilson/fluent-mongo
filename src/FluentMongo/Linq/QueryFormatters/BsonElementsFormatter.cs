@@ -314,29 +314,28 @@ namespace FluentMongo.Linq.QueryFormatters
 
         private void VisitBinaryAnd(BinaryExpression b)
         {
-            var savedElements = _elements;
-            _elements = new List<BsonElement>();
             var nodes = new BinaryExpressionDenester().GetDenestedExpressions(b, ExpressionType.And, ExpressionType.AndAlso);
-            foreach (var node in nodes)
-                Visit(node);
-
-            var groupedElements = _elements.GroupBy(x => x.Name);
-            _elements = savedElements;
+            var elements = nodes.SelectMany(n => new BsonElementsFormatter().GetElements(n));
+                
+            var groupedElements = elements.GroupBy(x => x.Name);
             foreach (var grouping in groupedElements)
             {
                 if (grouping.Count() == 1)
                     _elements.Add(grouping.Single());
                 else
-                    _elements.Add(new BsonElement(grouping.Key, new BsonDocument(grouping.SelectMany(x => ((BsonDocument)x.Value).Elements))));
+                {
+                    if (grouping.All(x => x.Value is BsonDocument))
+                        _elements.Add(new BsonElement(grouping.Key, new BsonDocument(grouping.SelectMany(x => ((BsonDocument)x.Value).Elements))));
+                    else
+                        _elements.Add(new BsonElement("$and", new BsonArray(grouping.Select(g => new BsonDocument(g)))));
+                }
             }
         }
 
         private void VisitBinaryOr(BinaryExpression b)
         {
             var nodes = new BinaryExpressionDenester().GetDenestedExpressions(b, ExpressionType.Or, ExpressionType.OrElse);
-            List<BsonValue> values = new List<BsonValue>();
-            foreach (var node in nodes)
-                values.Add(new BsonDocument(new BsonElementsFormatter().GetElements(node)));
+            var values = nodes.Select(n => new BsonDocument(new BsonElementsFormatter().GetElements(n))).OfType<BsonValue>();
 
             _elements.Add(new BsonElement("$or", new BsonArray(values)));
         }

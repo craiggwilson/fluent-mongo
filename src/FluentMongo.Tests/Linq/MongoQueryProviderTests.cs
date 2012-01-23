@@ -102,7 +102,26 @@ namespace FluentMongo.Linq
             Assert.AreEqual(
                 new BsonDocument(
                     new BsonElement("$or", new BsonArray(new[] { new BsonDocument("AddressType", 0).Add("city", "Dallas"), new BsonDocument("AddressType", 1).Add("city", "London") })),
-                    new BsonElement("otherAdds", new BsonDocument("$elemMatch", new BsonDocument("age", 32)))),
+                    new BsonElement("age", 32)),
+                queryObject.Query);
+        }
+
+        [Test]
+        public void Odd()
+        {
+            var localAge = 21;
+            var localName = "Jack";
+            var people = Collection.AsQueryable().Where(p => (p.Age > 0 && p.Age == localAge) || p.FirstName == localName);
+
+            var queryObject = ((IMongoQueryable)people).GetQueryObject();
+            Assert.AreEqual(0, queryObject.NumberToLimit);
+            Assert.AreEqual(0, queryObject.NumberToSkip);
+            Assert.AreEqual(
+                new BsonDocument(
+                    "$or",
+                    new BsonArray(new [] {
+                        new BsonDocument("$and", new BsonArray(new [] { new BsonDocument("age", new BsonDocument("$gt", 0)), new BsonDocument("age", localAge) })),
+                        new BsonDocument("fn", localName)})),
                 queryObject.Query);
         }
 
