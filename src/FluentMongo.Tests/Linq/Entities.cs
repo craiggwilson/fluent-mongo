@@ -32,6 +32,8 @@ namespace FluentMongo.Linq
 
         public List<string> Hobbies { get; set; }
 
+        public string[] Aliases { get; set; }
+
         public string MidName { get; set; }
 
         public ObjectId? LinkedId { get; set; }

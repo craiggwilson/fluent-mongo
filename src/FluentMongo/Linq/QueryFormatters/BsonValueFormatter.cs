@@ -50,7 +50,7 @@ namespace FluentMongo.Linq.QueryFormatters
                         memberType = memberType.GetInterfaceClosing(typeof(IEnumerable<>)).GetGenericArguments()[0];
 
                     // if the current type is not the MemberType and is IEnumerable, then it might be a $in query
-                    if (memberType != value.GetType() && value is IEnumerable)
+                    if (memberType != value.GetType() && !(value is string) && value is IEnumerable)
                     {
                         value = ((IEnumerable)value).OfType<object>().Select(v => SerializeValue(v, _memberMap)).ToArray();
                     }

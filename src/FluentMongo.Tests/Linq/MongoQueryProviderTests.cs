@@ -261,6 +261,18 @@ namespace FluentMongo.Linq
         }
 
         [Test]
+        public void NestedArray_Contains()
+        {
+            var people = Collection.AsQueryable().Where(x => x.Aliases.Contains("DrG"));
+
+            var queryObject = ((IMongoQueryable)people).GetQueryObject();
+            Assert.AreEqual(0, queryObject.Fields.ElementCount);
+            Assert.AreEqual(0, queryObject.NumberToLimit);
+            Assert.AreEqual(0, queryObject.NumberToSkip);
+            Assert.AreEqual(new BsonDocument("Aliases", "DrG"), queryObject.Query);
+        }
+
+        [Test]
         public void NestedArray_indexer()
         {
             var people = Collection.AsQueryable().Where(x => x.EmployerIds[0] == 1);
