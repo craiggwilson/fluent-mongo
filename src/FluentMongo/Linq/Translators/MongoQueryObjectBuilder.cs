@@ -2,6 +2,8 @@
 using FluentMongo.Linq.Expressions;
 using System.Linq.Expressions;
 using System.Linq;
+using FluentMongo.Linq.QueryFormatters;
+using MongoDB.Bson;
 
 namespace FluentMongo.Linq.Translators
 {
@@ -28,16 +30,18 @@ namespace FluentMongo.Linq.Translators
                 VisitSource(select.From);
             if (select.Where != null)
             {
-                try
-                {
+                //try
+                //{
+                    var elements = new BsonElementsFormatter().GetElements(select.Where);
+                    _queryObject.SetQueryDocument(new BsonDocument(elements));
                     //try this first, and if it fails, resort to javascript generation, which is slower on the server side.
-                    _queryObject.SetQueryDocument(new BsonDocumentFormatter().FormatDocument(select.Where));
-                }
-                catch (InvalidQueryException) { throw; }
-                catch (Exception)
-                {
-                    _queryObject.SetWhereClause(new JavascriptFormatter().FormatJavascript(select.Where));
-                }
+                    //_queryObject.SetQueryDocument(new BsonDocumentFormatter().FormatDocument(select.Where));
+                //}
+                //catch (InvalidQueryException) { throw; }
+                //catch (Exception)
+                //{
+                //    _queryObject.SetWhereClause(new JavascriptFormatter().FormatJavascript(select.Where));
+                //}
             }
 
             if (_queryAttributes.IsMapReduce)

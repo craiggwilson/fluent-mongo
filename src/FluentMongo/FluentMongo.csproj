@@ -80,8 +80,11 @@
     <Compile Include="Linq\MongoQueryObject.cs" />
     <Compile Include="Linq\MongoQueryProvider.cs" />
     <Compile Include="Linq\QueryableExtensions.cs" />
+    <Compile Include="Linq\QueryFormatters\BinaryExpressionDenester.cs" />
+    <Compile Include="Linq\QueryFormatters\BsonValueFormatter.cs" />
     <Compile Include="Linq\Translators\AggregateChecker.cs" />
     <Compile Include="Linq\Translators\AggregateRewriter.cs" />
+    <Compile Include="Linq\QueryFormatters\BsonElementsFormatter.cs" />
     <Compile Include="Linq\Translators\DeclaredAliasGatherer.cs" />
     <Compile Include="Linq\Translators\BsonDocumentFormatter.cs" />
     <Compile Include="Linq\Translators\ExpressionReplacer.cs" />
