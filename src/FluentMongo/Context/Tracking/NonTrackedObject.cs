@@ -23,24 +23,9 @@ namespace FluentMongo.Context.Tracking
             Original = original;
         }
 
-        public bool IsDeleted
+        public void AcceptChanges()
         {
-            get { return false; }
-        }
-
-        public bool IsNew
-        {
-            get { return false; }
-        }
-
-        public bool IsModified
-        {
-            get { return false; }
-        }
-
-        public bool IsPossiblyModified
-        {
-            get { return false; }
+            Original = Current.ToBsonDocument();
         }
 
         public TrackedObjectUpdateDocument CalculateUpdate()
@@ -50,36 +35,6 @@ namespace FluentMongo.Context.Tracking
             var update = new UpdateDocument(Current.ToBsonDocument().Elements);
 
             return new TrackedObjectUpdateDocument(query, update);
-        }
-
-        public void ConvertToDead()
-        {
-            //do nothing
-        }
-
-        public void ConvertToDeleted()
-        {
-            //do nothing
-        }
-
-        public void ConvertToModified()
-        {
-            //do nothing
-        }
-
-        public void ConvertToNew()
-        {
-            //do nothing
-        }
-
-        public void ConvertToPossiblyModified()
-        {
-            //do nothing
-        }
-
-        public void ConvertToUnmodified()
-        {
-            //do nothing
         }
     }
 }

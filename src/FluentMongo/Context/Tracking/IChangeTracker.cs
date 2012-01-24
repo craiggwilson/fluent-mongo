@@ -9,10 +9,6 @@ namespace FluentMongo.Context.Tracking
     {
         ITrackedObject GetTrackedObject(object obj);
 
-        bool IsTracked(object obj);
-
-        void StopTracking(object obj);
-
         ITrackedObject Track(object obj);
     }
 }

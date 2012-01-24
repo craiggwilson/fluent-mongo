@@ -95,57 +95,22 @@ namespace FluentMongo.Context.Tracking
 
         private class DefaultTrackedObject : ITrackedObject
         {
-            private State _state;
-
             public BsonClassMap ClassMap { get; private set; }
 
             public BsonDocument Original { get; private set; }
 
             public object Current { get; private set; }
 
-            public bool IsDead
-            {
-                get { return _state == State.Dead; }
-            }
-
-            public bool IsDeleted
-            {
-                get { return _state == State.Deleted; }
-            }
-
-            public bool IsNew
-            {
-                get { return _state == State.New; }
-            }
-
-            public bool IsModified
-            {
-                get { return _state == State.Modified; }
-            }
-
-            public bool IsPossiblyModified
-            {
-                get { return _state == State.PossiblyModified; }
-            }
-
             public DefaultTrackedObject(BsonClassMap classMap, object current, BsonDocument original)
             {
                 ClassMap = classMap;
                 Current = current;
                 Original = original;
-                _state = State.PossiblyModified;
             }
 
             public void AcceptChanges()
             {
-                if (IsDeleted)
-                {
-                    ConvertToDead();
-                }
-                else if (IsNew || IsPossiblyModified)
-                {
-                    ConvertToUnmodified();
-                }
+                Original = Current.ToBsonDocument();
             }
 
             public TrackedObjectUpdateDocument CalculateUpdate()
@@ -157,49 +122,6 @@ namespace FluentMongo.Context.Tracking
                 var update = new UpdateDocumentBuilder(Original, currentAsDocument).Build();
 
                 return new TrackedObjectUpdateDocument(query, update);
-            }
-
-            public void ConvertToDead()
-            {
-                _state = State.Dead;
-            }
-
-            public void ConvertToDeleted()
-            {
-                _state = State.Deleted;
-            }
-
-            public void ConvertToModified()
-            {
-                _state = State.Modified;
-            }
-
-            public void ConvertToNew()
-            {
-                this.Original = null;
-                _state = State.New;
-            }
-
-            public void ConvertToPossiblyModified()
-            {
-                _state = State.PossiblyModified;
-            }
-
-            public void ConvertToUnmodified()
-            {
-                _state = State.PossiblyModified;
-                this.Original = Current.ToBsonDocument();
-            }
-
-            
-
-            private enum State
-            {
-                New,
-                Deleted,
-                Modified,
-                PossiblyModified,
-                Dead
             }
         }
     }

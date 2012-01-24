@@ -12,10 +12,20 @@ namespace FluentMongo.Context
 
         IQueryable<T> Find<T>(string collectionName);
 
-        SafeModeResult Save<T>(string collectionName, T entity);
+        void Insert<T>(string collectionName, T entity);
 
-        SafeModeResult Save<T>(string collectionName, T entity, MongoInsertOptions options);
+        void Insert<T>(string collectionName, T entity, MongoInsertOptions options);
 
-        SafeModeResult Save<T>(string collectionName, T entity, SafeMode safeMode);
+        void Insert<T>(string collectionName, T entity, SafeMode safeMode);
+
+        void Update<T>(string collectionName, T entity);
+
+        void Update<T>(string collectionName, T entity, MongoUpdateOptions options);
+
+        void Update<T>(string collectionName, T entity, SafeMode safeMode);
+
+        void Update<T>(string collectionName, T entity, UpdateFlags flags);
+
+        void Update<T>(string collectionName, T entity, UpdateFlags flags, SafeMode safeMode);
     }
 }

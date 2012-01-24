@@ -10,9 +10,9 @@ namespace FluentMongo.Context.Tracking
     {
         public IMongoQuery Query { get; private set; }
 
-        public IMongoUpdate Update { get; private set; }
+        public UpdateDocument Update { get; private set; }
 
-        public TrackedObjectUpdateDocument(IMongoQuery query, IMongoUpdate update)
+        public TrackedObjectUpdateDocument(IMongoQuery query, UpdateDocument update)
         {
             Query = query;
             Update = update;

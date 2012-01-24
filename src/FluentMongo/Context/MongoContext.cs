@@ -44,31 +44,108 @@ namespace FluentMongo.Context
                 _changeTracker);
         }
 
-        public SafeModeResult Save<T>(string collectionName, T entity)
+        public void Insert<T>(string collectionName, T entity)
+        {
+            _changeTracker.Track(entity);
+            var collection = GetCollection<T>(collectionName);
+
+            collection.Insert(entity);
+        }
+
+        public void Insert<T>(string collectionName, T entity, MongoInsertOptions options)
+        {
+            _changeTracker.Track(entity);
+            var collection = GetCollection<T>(collectionName);
+
+            collection.Insert(entity, options);
+        }
+
+        public void Insert<T>(string collectionName, T entity, SafeMode safeMode)
+        {
+            _changeTracker.Track(entity);
+            var collection = GetCollection<T>(collectionName);
+
+            collection.Insert(entity, safeMode);
+        }
+
+        public void Update<T>(string collectionName, T entity)
         {
             var collection = GetCollection<T>(collectionName);
             var trackedObject = _changeTracker.GetTrackedObject(entity);
             if (trackedObject == null)
-                return collection.Save(entity);
-            return null;
+                trackedObject = _changeTracker.Track(entity);
+
+            var update = trackedObject.CalculateUpdate();
+            trackedObject.AcceptChanges();
+
+            if (update.Update.ElementCount == 0)
+                return;
+
+            collection.Update(update.Query, update.Update);
         }
 
-        public SafeModeResult Save<T>(string collectionName, T entity, MongoInsertOptions options)
+        public void Update<T>(string collectionName, T entity, MongoUpdateOptions options)
         {
             var collection = GetCollection<T>(collectionName);
             var trackedObject = _changeTracker.GetTrackedObject(entity);
             if (trackedObject != null)
-                return collection.Save(entity, options);
-            return null;
+                trackedObject = _changeTracker.Track(entity);
+
+            var update = trackedObject.CalculateUpdate();
+            trackedObject.AcceptChanges();
+
+            if (update.Update.ElementCount == 0)
+                return;
+
+            collection.Update(update.Query, update.Update, options);
         }
 
-        public SafeModeResult Save<T>(string collectionName, T entity, SafeMode safeMode)
+        public void Update<T>(string collectionName, T entity, SafeMode safeMode)
         {
             var collection = GetCollection<T>(collectionName);
             var trackedObject = _changeTracker.GetTrackedObject(entity);
             if (trackedObject != null)
-                return collection.Save(entity, safeMode);
-            return null;
+                trackedObject = _changeTracker.Track(entity);
+
+            var update = trackedObject.CalculateUpdate();
+            trackedObject.AcceptChanges();
+
+            if (update.Update.ElementCount == 0)
+                return;
+
+            collection.Update(update.Query, update.Update, safeMode);
+        }
+
+        public void Update<T>(string collectionName, T entity, UpdateFlags flags)
+        {
+            var collection = GetCollection<T>(collectionName);
+            var trackedObject = _changeTracker.GetTrackedObject(entity);
+            if (trackedObject != null)
+                trackedObject = _changeTracker.Track(entity);
+
+            var update = trackedObject.CalculateUpdate();
+            trackedObject.AcceptChanges();
+
+            if (update.Update.ElementCount == 0)
+                return;
+
+            collection.Update(update.Query, update.Update, flags);
+        }
+
+        public void Update<T>(string collectionName, T entity, UpdateFlags flags, SafeMode safeMode)
+        {
+            var collection = GetCollection<T>(collectionName);
+            var trackedObject = _changeTracker.GetTrackedObject(entity);
+            if (trackedObject != null)
+                trackedObject = _changeTracker.Track(entity);
+
+            var update = trackedObject.CalculateUpdate();
+            trackedObject.AcceptChanges();
+
+            if (update.Update.ElementCount == 0)
+                return;
+
+            collection.Update(update.Query, update.Update, flags, safeMode);
         }
 
         public void Dispose()

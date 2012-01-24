@@ -47,7 +47,7 @@ namespace FluentMongo.Context
         }
 
         [Test]
-        public void Find_should_return_item_being_tracked_and_not_database_version_if_it_exists()
+        public void Update_should_only_issue_updated_query()
         {
             using (var context = CreateContext())
             {
@@ -55,7 +55,7 @@ namespace FluentMongo.Context
 
                 people[0].FirstName = "Jim";
 
-                Assert.AreEqual("Jim", people[0].FirstName);
+                context.Update("people", people[0]);
             }
         }
     }

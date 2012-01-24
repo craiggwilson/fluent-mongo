@@ -15,26 +15,8 @@ namespace FluentMongo.Context.Tracking
 
         object Current { get; }
 
-        bool IsDeleted { get; }
-
-        bool IsNew { get; }
-
-        bool IsModified { get; }
-
-        bool IsPossiblyModified { get; }
+        void AcceptChanges();
 
         TrackedObjectUpdateDocument CalculateUpdate();
-
-        void ConvertToDead();
-
-        void ConvertToDeleted();
-
-        void ConvertToModified();
-
-        void ConvertToNew();
-
-        void ConvertToPossiblyModified();
-
-        void ConvertToUnmodified();
     }
 }
