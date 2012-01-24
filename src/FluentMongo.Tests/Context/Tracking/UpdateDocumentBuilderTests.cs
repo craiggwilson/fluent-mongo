@@ -13,8 +13,8 @@ namespace FluentMongo.Context.Tracking
         [Test]
         public void No_changes()
         {
-            var original = BsonDocument.Parse(@"{name: ""Jack"", address: { street: ""123 Main St."", city: ""Dallas"" } }");
-            var current = BsonDocument.Parse(@"{name: ""Jack"", address: { street: ""123 Main St."", city: ""Dallas"" } }");
+            var original = BsonDocument.Parse(@"{name: ""Jack"", address: { street: ""123 Main St."", city: ""Dallas"" }, aliases: [1,2,3] }");
+            var current = BsonDocument.Parse(@"{name: ""Jack"", address: { street: ""123 Main St."", city: ""Dallas"" }, aliases: [1,2,3] }");
 
             var updateDoc = new UpdateDocumentBuilder(original, current).Build();
 
@@ -162,6 +162,111 @@ namespace FluentMongo.Context.Tracking
 
             Assert.AreEqual(new BsonDocument()
                 .Add("$set", new BsonDocument("address", BsonDocument.Parse(@"{ street: ""234 Front Dr."" }"))),
+                updateDoc);
+        }
+
+        [Test]
+        public void Complex_element_with_a_complex_element_minor_change()
+        {
+            var original = BsonDocument.Parse(@"{name: ""Jack"", address: { street: ""123 Main St."", city: ""Dallas"", postalcode: {prefix: 1234, postfix: 75234} } }");
+            var current = BsonDocument.Parse(@"{name: ""Jack"", address: { street: ""123 Main St."", city: ""Dallas"", postalcode: {prefix: 1235, postfix: 75234} } }");
+
+            var updateDoc = new UpdateDocumentBuilder(original, current).Build();
+
+            Assert.AreEqual(new BsonDocument()
+                .Add("$set", new BsonDocument("address.postalcode.prefix", 1235)),
+                updateDoc);
+        }
+
+        [Test]
+        public void Array_addition()
+        {
+            var original = BsonDocument.Parse(@"{ aliases: [1,2,3] }");
+            var current = BsonDocument.Parse(@"{ aliases: [1,2,3,4] }");
+
+            var updateDoc = new UpdateDocumentBuilder(original, current).Build();
+
+            Assert.AreEqual(new BsonDocument()
+                .Add("$set", new BsonDocument("aliases.3", 4)), 
+                updateDoc);
+        }
+
+        [Test]
+        public void Array_change()
+        {
+            var original = BsonDocument.Parse(@"{ aliases: [1,2,3] }");
+            var current = BsonDocument.Parse(@"{ aliases: [1,4,3] }");
+
+            var updateDoc = new UpdateDocumentBuilder(original, current).Build();
+
+            Assert.AreEqual(new BsonDocument()
+                .Add("$set", new BsonDocument("aliases.1", 4)),
+                updateDoc);
+        }
+
+        [Test]
+        public void Array_removal_of_a_single_element()
+        {
+            var original = BsonDocument.Parse(@"{ aliases: [1,2,3] }");
+            var current = BsonDocument.Parse(@"{ aliases: [1,2] }");
+
+            var updateDoc = new UpdateDocumentBuilder(original, current).Build();
+
+            Assert.AreEqual(new BsonDocument()
+                .Add("$pop", new BsonDocument("aliases", 1)),
+                updateDoc);
+        }
+
+        [Test]
+        public void Array_change_and_removal_of_a_single_element()
+        {
+            var original = BsonDocument.Parse(@"{ aliases: [1,2,3] }");
+            var current = BsonDocument.Parse(@"{ aliases: [1,3] }");
+
+            var updateDoc = new UpdateDocumentBuilder(original, current).Build();
+
+            Assert.AreEqual(new BsonDocument()
+                .Add("$set", new BsonDocument("aliases.1", 3))
+                .Add("$pop", new BsonDocument("aliases", 1)),
+                updateDoc);
+        }
+
+        [Test]
+        public void Array_removal_of_multiple_element()
+        {
+            var original = BsonDocument.Parse(@"{ aliases: [1,2,3] }");
+            var current = BsonDocument.Parse(@"{ aliases: [1] }");
+
+            var updateDoc = new UpdateDocumentBuilder(original, current).Build();
+
+            Assert.AreEqual(new BsonDocument()
+                .Add("$set", new BsonDocument("aliases", new BsonArray(new [] { 1 }))),
+                updateDoc);
+        }
+
+        [Test]
+        public void Array_change_and_addition()
+        {
+            var original = BsonDocument.Parse(@"{ aliases: [1,2,3] }");
+            var current = BsonDocument.Parse(@"{ aliases: [1,4,3,5] }");
+
+            var updateDoc = new UpdateDocumentBuilder(original, current).Build();
+
+            Assert.AreEqual(new BsonDocument()
+                .Add("$set", new BsonDocument("aliases.1", 4).Add("aliases.3", 5)),
+                updateDoc);
+        }
+
+        [Test]
+        public void Array_complex_type_change()
+        {
+            var original = BsonDocument.Parse(@"{ aliases: [{num: 1},{num: 2}, {num: 3}] }");
+            var current = BsonDocument.Parse(@"{ aliases: [{num: 1},{num: 4}, {num: 3}] }");
+
+            var updateDoc = new UpdateDocumentBuilder(original, current).Build();
+
+            Assert.AreEqual(new BsonDocument()
+                .Add("$set", new BsonDocument("aliases.1", new BsonDocument("num", 4))),
                 updateDoc);
         }
     }
