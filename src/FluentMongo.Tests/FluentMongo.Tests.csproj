@@ -60,6 +60,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Context\ContextTestBase.cs" />
+    <Compile Include="Context\Entities.cs" />
+    <Compile Include="Context\MongoContextTests.cs" />
+    <Compile Include="Context\Tracking\UpdateDocumentBuilderTests.cs" />
     <Compile Include="Linq\ClassMaps\CustomSerializedFieldClassMap.cs" />
     <Compile Include="Linq\Entities.cs" />
     <Compile Include="Linq\LinqTestBase.cs" />

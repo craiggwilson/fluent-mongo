@@ -49,7 +49,7 @@ namespace FluentMongo.Linq
         /// <typeparam name="TElement">The type of the element.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns></returns>
-        public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
+        public virtual IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
             return new MongoQuery<TElement>(this, expression);
         }
@@ -61,7 +61,7 @@ namespace FluentMongo.Linq
         /// <returns>
         /// An <see cref="T:System.Linq.IQueryable"/> that can evaluate the query represented by the specified expression tree.
         /// </returns>
-        public IQueryable CreateQuery(Expression expression)
+        public virtual IQueryable CreateQuery(Expression expression)
         {
             Type elementType = TypeHelper.GetElementType(expression.Type);
             try

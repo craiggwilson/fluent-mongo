@@ -48,6 +48,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Context\Tracking\UpdateDocumentBuilder.cs" />
+    <Compile Include="Context\Tracking\TrackedObjectUpdateDocument.cs" />
+    <Compile Include="Context\Tracking\TrackingQuery.cs" />
+    <Compile Include="Context\Tracking\TrackingQueryProvider.cs" />
+    <Compile Include="Context\IMongoContextx.cs" />
+    <Compile Include="Context\MongoContext.cs" />
+    <Compile Include="Context\Tracking\DefaultChangeTracker.cs" />
+    <Compile Include="Context\Tracking\IChangeTracker.cs" />
+    <Compile Include="Context\Tracking\ITrackedObject.cs" />
+    <Compile Include="Context\Tracking\NonTrackedObject.cs" />
     <Compile Include="Linq\BsonDocumentQuery.cs" />
     <Compile Include="Linq\ExecutionBuilder.cs" />
     <Compile Include="Linq\Expressions\AggregateExpression.cs" />

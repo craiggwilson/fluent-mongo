@@ -11,7 +11,7 @@ namespace FluentMongo
     public abstract class TestBase
     {
         private MongoServer _server;
-        private MongoDatabase _database;
+        protected MongoDatabase _database;
 
         [TestFixtureSetUp]
         public virtual void SetupFixture()
