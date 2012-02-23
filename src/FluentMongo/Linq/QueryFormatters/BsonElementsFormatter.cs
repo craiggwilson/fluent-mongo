@@ -243,8 +243,19 @@ namespace FluentMongo.Linq.QueryFormatters
             var convention = BsonDefaultSerializer.LookupDiscriminatorConvention(b.TypeOperand);
             var discriminator = convention.GetDiscriminator(b.Expression.Type, b.TypeOperand);
 
-            PushElementName(convention.ElementName);
-            AddElementWithValue(discriminator);
+            if (discriminator.IsBsonArray)
+            {
+                PushElementName("$and");
+                var values = discriminator.AsBsonArray
+                    .Select(v => new BsonDocument(new BsonElement(convention.ElementName, v)))
+                    .ToList();
+                AddElementWithValue(new BsonArray(values));
+            }
+            else
+            {
+                PushElementName(convention.ElementName);
+                AddElementWithValue(discriminator);
+            }
 
             return b;
         }
