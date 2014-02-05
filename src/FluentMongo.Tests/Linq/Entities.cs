@@ -103,4 +103,22 @@ namespace FluentMongo.Linq
     {
         public CustomId Id { get; set; }
     }
+
+    [BsonDiscriminator(RootClass = true)]
+    public class RootClass
+    {
+        public ObjectId Id { get; set; }
+
+        public string Name { get; set; }
+    }
+
+    public class MiddleClass : RootClass
+    {
+        
+    }
+
+    public class InheritedClass : MiddleClass
+    {
+        
+    }
 }

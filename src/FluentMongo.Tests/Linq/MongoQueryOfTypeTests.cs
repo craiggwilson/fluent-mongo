@@ -10,6 +10,8 @@ namespace FluentMongo.Linq
     [TestFixture]
     public class MongoQueryOfTypeTests : LinqTestBase
     {
+        protected MongoCollection<RootClass> DiscriminatedCollection;
+
         public override void SetupFixture()
         {
             base.SetupFixture();
@@ -45,6 +47,12 @@ namespace FluentMongo.Linq
                 Salary = 50000.0,
                 Age = 42
             }, SafeMode.True);
+
+            DiscriminatedCollection = GetCollection<RootClass>("root");
+            DiscriminatedCollection.Insert(new InheritedClass
+            {
+                Name = "Tony"
+            }, SafeMode.True);
         }
 
         [Test]
@@ -73,6 +81,14 @@ namespace FluentMongo.Linq
 
             Assert.AreEqual(1, people.Count);
             Assert.AreEqual("Sonny", people.First().FirstName);
+        }
+
+        [Test]
+        public void OfTypeWithHierarchicalDiscriminator()
+        {
+            var items = DiscriminatedCollection.AsQueryable().OfType<MiddleClass>().ToList();
+
+            Assert.AreEqual(1, items.Count);
         }
     }
 }
