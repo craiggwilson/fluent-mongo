@@ -4,6 +4,8 @@ using System.Linq;
 
 namespace FluentMongo.Linq
 {
+    using System.Runtime.Serialization;
+
     /// <summary>
     /// 
     /// </summary>
@@ -108,6 +110,22 @@ namespace FluentMongo.Linq
                 throw new ArgumentException("Must be an open generic type.", "openType");
 
             return type.GetInterfaces().FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == openType);
+        }
+
+        public static string ResolveName(this MemberInfo member)
+        {
+            string name = null;
+            var dataMemberAttribute = member.GetCustomAttribute<DataMemberAttribute>(true);
+
+            if (dataMemberAttribute != null)
+            {
+                name = dataMemberAttribute.Name;
+            }
+            if (string.IsNullOrEmpty(name))
+            {
+                name = member.Name;
+            }
+            return name;
         }
     }
 }

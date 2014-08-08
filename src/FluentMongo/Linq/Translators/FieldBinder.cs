@@ -139,7 +139,8 @@ namespace FluentMongo.Linq.Translators
                     Expression e;
                     if (_determiner.IsGroupingKey(m))
                     {
-                        _fieldParts.Push(m.Member.Name);
+                        var name = m.Member.ResolveName();
+                        _fieldParts.Push(name);
                         Visit(m.Expression);
                         return m;
                     }
@@ -157,7 +158,7 @@ namespace FluentMongo.Linq.Translators
                     else if(e == null)
                     {
                         var classMap = BsonClassMap.LookupClassMap(declaringType);
-                        var propMap = classMap.GetMemberMap(m.Member.Name);
+                        var propMap = classMap.GetMemberMap(m.Member.ResolveName());
                         if (propMap != null)
                         {
                             _fieldParts.Push(propMap.ElementName);
@@ -166,7 +167,7 @@ namespace FluentMongo.Linq.Translators
                                 _bsonMemberMap = propMap;
                         }
                         else
-                            _fieldParts.Push(m.Member.Name);
+                            _fieldParts.Push(m.Member.ResolveName());
 
                         Visit(m.Expression);
                         return m;
